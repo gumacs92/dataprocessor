@@ -2,7 +2,7 @@
   "name": "gumacs92/dataprocessor",
   "type": "library",
   "description": "A home made Respect/Validation like validator library, still a lot to do",
-  "minimum-stability": "dev",
+  "minimum-stability": "stable",
   "license": "MIT",
   "version": "0.0.1",
   "authors": [
