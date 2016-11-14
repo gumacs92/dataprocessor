@@ -9,8 +9,6 @@
 namespace Processor\Rules;
 
 
-use Processor\Rules\AbstractRule;
-
 class AlnumRule extends AbstractRule
 {
     protected $extraCharacters;
@@ -18,7 +16,7 @@ class AlnumRule extends AbstractRule
     public function rule()
     {
         parent::rule();
-        $chars = '/[^a-zA-Z0-9' . $this->extraCharacters . ']/';
+        $chars = '/[^\w' . $this->extraCharacters . ']/';
         if (preg_match($chars, self::$data)) {
             return false;
         }

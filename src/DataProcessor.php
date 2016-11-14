@@ -19,6 +19,7 @@ use Processor\Rules\AbstractRule;
  * @method DataProcessor boolVal()
  * @method DataProcessor digit($extraCharacters = "")
  * @method DataProcessor each($valueProcessor, $keyProcessor = null)
+ * @method DataProcessor escapeHtmlTags()
  * @method DataProcessor fileMimeType($mimeType)
  * @method DataProcessor fileMoveUpload($uniqueId, $uploadPath, $uploadName = "", $extension = "", $fullPath = false, $delete = true)
  * @method DataProcessor fileNoError($size = "")
@@ -35,17 +36,31 @@ use Processor\Rules\AbstractRule;
  * @method DataProcessor numeric()
  * @method DataProcessor oneOf(...$processors)
  * @method DataProcessor optional(DataProcessor $rule)
+ * @method DataProcessor removeHtmlTags(\HTMLPurifier_Config $config = null)
  * @method DataProcessor setTypeBool()
  * @method DataProcessor setTypeFloat()
  * @method DataProcessor setTypeInt()
  * @method DataProcessor setTypeString()
  * @method DataProcessor stringType()
+ * @method DataProcessor unicodeAlnum($extraCharacters = "")
  */
 class DataProcessor extends AbstractRule
 {
     private $ruleList = [];
 
     public static function init(){
+        if (!defined('DS')) {
+            define("DS", DIRECTORY_SEPARATOR);
+        }
+        if (!defined('ROOT')) {
+            define('ROOT', dirname(getcwd(), 1) . DS);
+        }
+        if (!defined('VENDOR_PATH')) {
+            define('VENDOR_PATH', ROOT . 'vendor' . DS);
+        }
+
+        require_once VENDOR_PATH . "autoload.php";
+
         $analyser = new DataProcessor();
 
         return $analyser;

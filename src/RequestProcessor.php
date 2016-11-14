@@ -15,9 +15,9 @@ use Processor\Rules\RuleSettings;
 abstract class RequestProcessor
 {
     protected $rules = [];
-    protected $newErrorMessages = [];
+    protected $errorMessages = [];
 
-    protected $errors = [];
+    protected $resultErrors = [];
     private $validatedData;
 
     public function __construct()
@@ -33,7 +33,7 @@ abstract class RequestProcessor
     abstract public function initRules();
 
     final public function setErrorSettings(){
-        foreach ($this->newErrorMessages as $ruleName => $errorMessage){
+        foreach ($this->errorMessages as $ruleName => $errorMessage) {
             RuleSettings::setErrorSetting($ruleName, $errorMessage);
         }
     }
@@ -53,12 +53,29 @@ abstract class RequestProcessor
             } catch (FailedProcessingException $e) {
                 $failed = true;
                 if($allerrors){
-                    $this->errors[$field] = $e->getAllErrors();
+                    $this->resultErrors[$field] = $e->getAllErrors();
                 }
             }
         }
 
         return $failed ? false : true;
+    }
+
+
+    /**
+     * @return mixed
+     */
+    public function getValidatedData()
+    {
+        return $this->validatedData;
+    }
+
+    /**
+     * @return array
+     */
+    public function getResultErrors()
+    {
+        return $this->resultErrors;
     }
 
 }

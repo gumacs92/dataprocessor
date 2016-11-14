@@ -21,7 +21,8 @@
 
   "require": {
     "php": "^5.3.3 || ^7.0",
-    "ralouphie/mimey": "1.0.3"
+    "ralouphie/mimey": "1.0.3",
+    "ezyang/htmlpurifier": "v4.8.0"
   },
 
   "require-dev": {

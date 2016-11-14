@@ -19,6 +19,7 @@ class RuleSettings
         "boolVal" => [],
         "digit" => [["type" => "string", "field" => "extraCharacters", "template" => true, "optional" => ""]],
         "each" => [["type" => "Processor\\DataProcessor", "field" => "valueProcessor"]], ["type" => "Processor\\DataProcessor", "field" => "keyProcessor", "optional" => "null"],
+        "escapeHtmlTags" => [],
         "fileMimeType" => [["type" => "string", "field" => "mimeType", "template" => true]],
         "fileMoveUpload" => [["type" => "string", "field" => "uniqueId"], ["type" => "string", "field" => "uploadPath", "template" => true], ["type" => "string", "field" => "uploadName", "optional" => "null"], ["type" => "string", "field" => "extension", "optional" => "null"], ["type" => "bool", "field" => "fullPath", "optional" => false], ["type" => "bool", "field" => "delete", "optional" => true]],
         "fileNoError" => [["type" => "integer", "field" => "size", "template" => true, "optional" => ""]],
@@ -35,11 +36,13 @@ class RuleSettings
         "numeric" => [],
         "oneOf" => [["type" => "Processor\\DataProcessor", "field" => "processors", "varying" => true]],
         "optional" => [["type" => "Processor\\DataProcessor", "field" => "processor"]],
+        "removeHtmlTags" => [["type" => "\HTMLPurifier_Config", "field" => "config", "optional" => "null"]],
         "setTypeBool" => [],
         "setTypeFloat" => [],
         "setTypeInt" => [],
         "setTypeString" => [],
         "stringType" => [],
+        "unicodeAlnum" => [["type" => "string", "field" => "extraCharacters", "template" => true, "optional" => ""]],
     ];
 
     private static $expectedValue = [
@@ -51,6 +54,7 @@ class RuleSettings
         "boolVal" => ['mixed'],
         "digit" => ["string"],
         "each" => ["array"],
+        "escapeHtmlTags" => ["string"],
         "fileMimeType" => ["array", "string", "\\SplFileInfo"],
         "fileMoveUpload" => ["array", "string", "\\SplFileInfo"],
         "fileNoError" => ["array"],
@@ -67,23 +71,26 @@ class RuleSettings
         "numeric" => ["mixed"],
         "oneOf" => ["mixed"],
         "optional" => ["mixed"],
+        "removeHtmlTags" => ["string"],
         "setTypeBool" => ['integer', 'bool', 'float', 'string'],
         "setTypeFloat" => ['integer', 'bool', 'float', 'string'],
         "setTypeInt" => ['integer', 'bool', 'float', 'string'],
         "setTypeString" => ['integer', 'bool', 'float', 'string'],
         "stringType" => ['mixed'],
+        "unicodeAlnum" => ["string"],
     ];
 
     private static $messages = [
-        //TODO extra
         "allOf" => "All of the following criteria must met:",
-        "alnum" => "{{name}} contain not only alfanumeric charachters",
+        //TODO extra
+        "alnum" => "{{name}} contain not only alfanumeric characters",
         "between" => "{{name}} must be between {{min}} and {{max}}",
         "boolType" => "{{name}} is not a boolean type",
         "boolVal" => "{{name}} is not a boolean value",
         //TODO extra
         "digit" => "{{name}} must contain only digits",
         "each" => "For each value the following criteria must met:",
+        "escapeHtmlTags" => "Couldn't escape {{name}}'s html tags",
         "fileMimeType" => "{{name}} is not a {{mimeType}} or not a file",
         "fileMoveUpload" => "Couldn't move {{name}} upload to the save location",
         "fileNoError" => ["not_files_global" => "", "exceeded_default_limit" => "The upload of {{name}} exceeded the max file size {{size}}", "exceeded_form_limit" => "The upload of {{name}} exceeded the max file size {{size}}", "partial_upload" => "The upload of {{name}} was partial", "no_upload" => "No file was uploaded for {{name}}", "missing_tmp" => "Missing temporary folder during upload. Ask the administrator for more information.", "failed_to_write" => "Failed to write {{name}} to the server.", "php_stopped_upload" => "A PHP extension stopped the upload of {{name}}", "unknown" => "Unknown error occured during {{name}} upload. Ask the administrator for more information."],
@@ -101,11 +108,14 @@ class RuleSettings
         "numeric" => "{{name}} value is not numeric",
         "oneOf" => "Atleast one of the following criteria must met:",
         "optional" => "",
+        "removeHtmlTags" => "Couldn't clear {{name}} form illegal html tags",
         "setTypeBool" => "Couldn't set {{name}}'s type to bool",
         "setTypeFloat" => "Couldn't set {{name}}'s type to float",
         "setTypeInt" => "Couldn't set {{name}}'s type to int",
         "setTypeString" => "Couldn't set {{name}}'s type to string",
         "stringType" => "{{name}} is not a string value",
+        //TODO extra
+        "unicodeAlnum" => "{{name}} contain not only unicode alfanumeric characters",
     ];
 
     public static function getArgumentsSetting($ruleName)
