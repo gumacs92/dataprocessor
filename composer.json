@@ -14,8 +14,7 @@
 
   "autoload": {
     "psr-4": {
-      "Processor\\": "src/",
-      "vendor\\gumacs92\\dataprocessor\\": ""
+      "Processor\\": "src/"
     }
   },
 

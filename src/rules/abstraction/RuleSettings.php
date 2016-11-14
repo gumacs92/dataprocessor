@@ -116,7 +116,7 @@ class RuleSettings
         "setTypeFloat" => "Couldn't set {{name}}'s type to float",
         "setTypeInt" => "Couldn't set {{name}}'s type to int",
         "setTypeString" => "Couldn't set {{name}}'s type to string",
-        "stringType" => "{{name}} is not a string value",
+        "stringType" => "{{name}} is not a string type",
         //TODO extra
         "unicodeAlnum" => "{{name}} contain not only unicode alfanumeric characters",
     ];
