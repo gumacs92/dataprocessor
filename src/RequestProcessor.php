@@ -43,7 +43,6 @@ abstract class RequestProcessor
         foreach ($request as $field => $value) {
             try {
                 if (isset($this->rules[$field])) {
-                    $value = $this->rules[$field]($value);
                     $this->rules[$field]->verify($value, $allerrors);
 
                     $this->validatedData[$field] = $this->rules->getData();
