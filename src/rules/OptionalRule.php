@@ -4,9 +4,7 @@ namespace Processor\Rules;
 
 use Processor\DataProcessor;
 use Processor\Exceptions\FailedProcessingException;
-
 use Processor\Exceptions\RuleException;
-use Processor\Rules\AbstractRule;
 
 /**
  * Created by PhpStorm.
@@ -32,7 +30,7 @@ class OptionalRule extends AbstractRule
     public function process()
     {
         if (!$this->rule()) {
-            $this->processor->setNameForErrors($this->template['name']);
+            $this->processor->setNameForErrors($this->nameForErrors);
             return $this->processor->process();
         } else {
             return true;
@@ -43,7 +41,7 @@ class OptionalRule extends AbstractRule
     {
         if (!$this->rule()) {
             try {
-                $this->processor->setNameForErrors($this->template['name']);
+                $this->processor->setNameForErrors($this->nameForErrors);
                 $return = $this->processor->process();
             } catch (FailedProcessingException $e) {
                 throw new RuleException($e->getAllErrors());

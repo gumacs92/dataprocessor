@@ -14,6 +14,7 @@ use Processor\Rules\AbstractRule;
  * @package Processor
  * @method DataProcessor allOf(...$processors)
  * @method DataProcessor alnum($extraCharacters = "")
+ * @method DataProcessor arrayVal()
  * @method DataProcessor between($min, $max, $inclusive = true);
  * @method DataProcessor boolType()
  * @method DataProcessor boolVal()

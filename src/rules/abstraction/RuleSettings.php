@@ -14,6 +14,7 @@ class RuleSettings
     private static $expectedArguments = [
         "allOf" => [["type" => "Processor\\DataProcessor", "field" => "processors", "varying" => true]],
         "alnum" => [["type" => "string", "field" => "extraCharacters", "template" => true, "optional" => ""]],
+        "arrayVal" => [],
         "between" => [["type" => "integer", "field" => "min", "template" => true], ["type" => "integer", "field" => "max", "template" => true], ["type" => "bool", "field" => "inclusive", "optional" => true]],
         "boolType" => [],
         "boolVal" => [],
@@ -49,6 +50,7 @@ class RuleSettings
         //TODO standard type
         "allOf" => ["mixed"],
         "alnum" => ["string"],
+        "arrayVal" => ["mixed"],
         "between" => ["integer", "float"],
         "boolType" => ['mixed'],
         "boolVal" => ['mixed'],
@@ -84,6 +86,7 @@ class RuleSettings
         "allOf" => "All of the following criteria must met:",
         //TODO extra
         "alnum" => "{{name}} contain not only alfanumeric characters",
+        "arrayVal" => "{{name}} is not an array val",
         "between" => "{{name}} must be between {{min}} and {{max}}",
         "boolType" => "{{name}} is not a boolean type",
         "boolVal" => "{{name}} is not a boolean value",
