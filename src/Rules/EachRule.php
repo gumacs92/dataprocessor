@@ -9,9 +9,8 @@
 namespace Processor\Rules;
 
 
-use Processor\Exceptions\FailedProcessingException;
-use Processor\Rules\AbstractRule;
 use Processor\DataProcessor;
+use Processor\Exceptions\FailedProcessingException;
 
 class EachRule extends AbstractRule
 {

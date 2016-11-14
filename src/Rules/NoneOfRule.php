@@ -11,7 +11,6 @@ namespace Processor\Rules;
 
 use Processor\DataProcessor;
 use Processor\Exceptions\FailedProcessingException;
-use Processor\Rules\AbstractRule;
 
 class NoneOfRule extends AbstractRule
 {

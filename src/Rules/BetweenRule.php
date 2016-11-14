@@ -9,8 +9,6 @@
 namespace Processor\Rules;
 
 
-use Processor\Rules\AbstractRule;
-
 class BetweenRule extends AbstractRule
 {
     protected $min;

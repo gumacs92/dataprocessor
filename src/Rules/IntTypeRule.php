@@ -8,8 +8,6 @@
 
 namespace Processor\Rules;
 
-use Processor\Rules\AbstractRule;
-
 class IntTypeRule extends AbstractRule
 {
     public function rule()

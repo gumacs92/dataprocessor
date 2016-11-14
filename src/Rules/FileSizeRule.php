@@ -3,26 +3,22 @@
  * Created by PhpStorm.
  * User: Gumacs
  * Date: 2016-11-10
- * Time: 04:41 PM
+ * Time: 05:03 PM
  */
 
 namespace Processor\Rules;
 
 
-use Processor\Rules\AbstractRule;
-
-class FileMimeTypeRule extends AbstractRule
+class FileSizeRule extends AbstractRule
 {
-    protected $mimeType;
+    protected $minSize;
+    protected $maxSize;
 
     public function rule()
     {
         parent::rule();
-
         if (isset(self::$data['tmp_name'])) {
-
             $tmpfile = new \SplFileInfo(self::$data['tmp_name']);
-
         } elseif (is_string(self::$data)) {
             $tmpfile = new \SplFileInfo(self::$data);
         } elseif (self::$data instanceof \SplFileInfo) {
@@ -37,10 +33,14 @@ class FileMimeTypeRule extends AbstractRule
             return false;
         }
 
-        $pathname = $tmpfile->getPathname();
-        $finfo = new \finfo(FILEINFO_MIME_TYPE);
+        $size = $tmpfile->getSize();
 
-        $return = $finfo->file($pathname) == $this->mimeType;
-        return $return;
+        if ((!is_null($this->minSize) and $size < $this->minSize) or
+            (!is_null($this->maxSize) and $size > $this->maxSize) ){
+            return false;
+        }
+
+        return true;
+
     }
 }

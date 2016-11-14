@@ -3,17 +3,16 @@
  * Created by PhpStorm.
  * User: Gumacs
  * Date: 2016-11-07
- * Time: 04:12 PM
+ * Time: 05:58 PM
  */
 
 namespace Processor\Rules;
 
 
-use Processor\Exceptions\FailedProcessingException;
-use Processor\Rules\AbstractRule;
 use Processor\DataProcessor;
+use Processor\Exceptions\FailedProcessingException;
 
-class OneOfRule extends AbstractRule
+class AllOfRule extends AbstractRule
 {
     protected $processors = [];
 
@@ -28,10 +27,10 @@ class OneOfRule extends AbstractRule
             $proc->setNameForErrors($this->nameForErrors);
             $return = $proc->process();
 
-            if($return){
+            if(!$return){
+                self::$data = $oldData;
                 break;
             }
-            self::$data = $oldData;
         }
 
         return $return;
@@ -39,8 +38,7 @@ class OneOfRule extends AbstractRule
 
     public function processWithErrors()
     {
-        $return = false;
-        $success = false;
+        $success = true;
         $this->rule();
 
         $errors = [];
@@ -50,11 +48,10 @@ class OneOfRule extends AbstractRule
                 $oldData = self::$data;
                 $proc->setNameForErrors($this->nameForErrors);
                 $proc->processWithErrors();
-                $success = true;
-                break;
             } catch(FailedProcessingException $e){
-                self::$data = $oldData;
+                $success = false;
                 $errors[] = $e->getAllErrors();
+                self::$data = $oldData;
             }
         }
         if(!$success){
@@ -67,4 +64,5 @@ class OneOfRule extends AbstractRule
 
         return true;
     }
+
 }

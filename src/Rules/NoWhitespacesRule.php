@@ -2,23 +2,21 @@
 /**
  * Created by PhpStorm.
  * User: Gumacs
- * Date: 2016-11-06
- * Time: 01:24 PM
+ * Date: 2016-11-07
+ * Time: 04:02 PM
  */
 
 namespace Processor\Rules;
 
 
-use Processor\Rules\AbstractRule;
-
-class DigitRule extends AbstractRule
+class NoWhitespacesRule extends AbstractRule
 {
     protected $extraCharacters;
 
     public function rule()
     {
         parent::rule();
-        $chars = '/[^0-9'. $this->extraCharacters .']/';
+        $chars = '/[\s' . $this->extraCharacters . ']/';
         if (preg_match($chars, self::$data))
         {
             return false;

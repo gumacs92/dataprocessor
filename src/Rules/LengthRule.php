@@ -10,8 +10,6 @@ namespace Processor\Rules;
 
 
 
-use Processor\Rules\AbstractRule;
-
 class LengthRule extends AbstractRule
 {
     protected $min;

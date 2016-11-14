@@ -9,8 +9,6 @@
 namespace Processor\Rules;
 
 
-use Processor\Rules\AbstractRule;
-
 class InRule extends AbstractRule
 {
     protected $list;

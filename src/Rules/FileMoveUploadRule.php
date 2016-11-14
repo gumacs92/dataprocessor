@@ -10,7 +10,6 @@ namespace Processor\Rules;
 
 
 
-use Processor\Rules\AbstractRule;
 use Mimey\MimeTypes;
 
 class FileMoveUploadRule extends AbstractRule

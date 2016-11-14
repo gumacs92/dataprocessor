@@ -2,20 +2,17 @@
 /**
  * Created by PhpStorm.
  * User: Gumacs
- * Date: 2016-11-09
- * Time: 02:10 AM
+ * Date: 2016-11-06
+ * Time: 12:58 PM
  */
 
 namespace Processor\Rules;
 
-
-use Processor\Rules\AbstractRule;
-
-class StringTypeRule extends AbstractRule
+class FloatTypeRule extends AbstractRule
 {
     public function rule()
     {
         parent::rule();
-        return is_string(self::$data);
+        return is_float(self::$data);
     }
 }

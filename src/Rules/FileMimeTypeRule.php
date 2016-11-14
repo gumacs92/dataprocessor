@@ -3,21 +3,22 @@
  * Created by PhpStorm.
  * User: Gumacs
  * Date: 2016-11-10
- * Time: 04:09 PM
+ * Time: 04:41 PM
  */
 
 namespace Processor\Rules;
 
 
-use Processor\Rules\AbstractRule;
-
-
-class FileUploadedRule extends AbstractRule
+class FileMimeTypeRule extends AbstractRule
 {
+    protected $mimeType;
+
     public function rule()
     {
         parent::rule();
+
         if (isset(self::$data['tmp_name'])) {
+
             $tmpfile = new \SplFileInfo(self::$data['tmp_name']);
 
         } elseif (is_string(self::$data)) {
@@ -29,7 +30,15 @@ class FileUploadedRule extends AbstractRule
         }
 
         $pathname = $tmpfile->getPathname();
-        $return = is_string($pathname) && is_uploaded_file($pathname);
+
+        if (!is_string($pathname) || !is_file($pathname)) {
+            return false;
+        }
+
+        $pathname = $tmpfile->getPathname();
+        $finfo = new \finfo(FILEINFO_MIME_TYPE);
+
+        $return = $finfo->file($pathname) == $this->mimeType;
         return $return;
     }
 }
