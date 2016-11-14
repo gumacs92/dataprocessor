@@ -8,6 +8,7 @@
 
 namespace Processor\Rules;
 
+use Processor\Rules\Abstraction\AbstractRule;
 
 class SetTypeBoolRule extends AbstractRule
 {

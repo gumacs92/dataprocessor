@@ -11,6 +11,7 @@ namespace Processor\Rules;
 
 use Processor\DataProcessor;
 use Processor\Exceptions\FailedProcessingException;
+use Processor\Rules\Abstraction\AbstractRule;
 
 class OneOfRule extends AbstractRule
 {

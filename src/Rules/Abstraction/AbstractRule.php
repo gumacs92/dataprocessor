@@ -1,5 +1,5 @@
 <?php
-namespace Processor\Rules;
+namespace Processor\Rules\Abstraction;
 
 use Processor\Exceptions\InvalidArgumentException;
 use Processor\Exceptions\RuleException;

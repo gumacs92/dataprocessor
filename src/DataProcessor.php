@@ -6,7 +6,7 @@ namespace Processor;
 use Processor\Exceptions\FailedProcessingException;
 use Processor\Exceptions\RuleException;
 use Processor\Factory\RuleFactory;
-use Processor\Rules\AbstractRule;
+use Processor\Rules\Abstraction\AbstractRule;
 
 
 /**

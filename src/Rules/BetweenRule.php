@@ -8,6 +8,7 @@
 
 namespace Processor\Rules;
 
+use Processor\Rules\Abstraction\AbstractRule;
 
 class BetweenRule extends AbstractRule
 {

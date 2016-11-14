@@ -8,8 +8,8 @@
 
 namespace Processor\Rules;
 
-
 use Processor\Exceptions\InvalidArgumentException;
+use Processor\Rules\Abstraction\AbstractRule;
 
 class FileNoErrorRule extends AbstractRule
 {

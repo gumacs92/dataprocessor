@@ -6,7 +6,7 @@
  * Time: 07:51 PM
  */
 
-namespace Processor\Rules;
+namespace Processor\Rules\Abstraction;
 
 
 interface IValidatable

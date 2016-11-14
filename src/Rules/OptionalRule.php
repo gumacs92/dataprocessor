@@ -5,6 +5,7 @@ namespace Processor\Rules;
 use Processor\DataProcessor;
 use Processor\Exceptions\FailedProcessingException;
 use Processor\Exceptions\RuleException;
+use Processor\Rules\Abstraction\AbstractRule;
 
 /**
  * Created by PhpStorm.

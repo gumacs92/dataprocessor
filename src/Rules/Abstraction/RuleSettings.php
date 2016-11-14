@@ -6,7 +6,7 @@
  * Time: 01:28 PM
  */
 
-namespace Processor\Rules;
+namespace Processor\Rules\Abstraction;
 
 
 class RuleSettings

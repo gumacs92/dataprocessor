@@ -2,6 +2,8 @@
 
 namespace Processor\Rules;
 
+use Processor\Rules\Abstraction\AbstractRule;
+
 /**
  * Created by PhpStorm.
  * User: Gumacs
