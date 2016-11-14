@@ -9,8 +9,7 @@
 namespace Processor;
 
 use Processor\Exceptions\FailedProcessingException;
-use Processor\Rules\AbstractRule;
-use Processor\Rules\RuleSettings;
+use Processor\Rules\Abstraction\RuleSettings;
 
 abstract class RequestProcessor
 {
@@ -43,7 +42,6 @@ abstract class RequestProcessor
         $failed = false;
         foreach ($request as $field => $value) {
             try {
-                /* @var AbstractRule $this->rules[] */
                 if (isset($this->rules[$field])) {
                     $value = $this->rules[$field]($value);
                     $this->rules[$field]->verify($value, $allerrors);
