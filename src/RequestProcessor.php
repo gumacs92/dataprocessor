@@ -45,7 +45,7 @@ abstract class RequestProcessor
                 if (isset($this->rules[$field])) {
                     $this->rules[$field]->verify($value, $allerrors);
 
-                    $this->validatedData[$field] = $this->rules->getData();
+                    $this->validatedData[$field] = DataProcessor::getData();
                 }
             } catch (FailedProcessingException $e) {
                 $failed = true;
