@@ -17,21 +17,21 @@ class StringTypeRuleTest extends \PHPUnit_Framework_TestCase
 {
     public function testStringTypeTrue()
     {
-        $return = DataProcessor::init()->StringType()->verify("123");
+        $return = DataProcessor::init()->stringType()->verify("123");
 
         $this->assertEquals(true, $return);
     }
 
     public function testStringTypeFalse()
     {
-        $return = DataProcessor::init()->StringType()->verify(10);
+        $return = DataProcessor::init()->stringType()->verify(10);
 
         $this->assertEquals(false, $return);
     }
 
     public function testStringTypeTrueWithError()
     {
-        $return = DataProcessor::init()->StringType()->verify("123", true);
+        $return = DataProcessor::init()->stringType()->verify("123", true);
 
         $this->assertEquals(true, $return);
     }
@@ -39,7 +39,7 @@ class StringTypeRuleTest extends \PHPUnit_Framework_TestCase
     public function testStringTypeFalseWithError()
     {
         try {
-            DataProcessor::init()->StringType()->verify(10, true);
+            DataProcessor::init()->stringType()->verify(10, true);
         } catch (FailedProcessingException $e) {
             $return = false;
             $this->assertEquals(1, sizeof($e->getAllErrors()));

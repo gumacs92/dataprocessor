@@ -9,22 +9,22 @@
 namespace Tests\Unit\Rules\Generic;
 
 
-use Tests\Helpers\Tools;
 use Processor\DataProcessor;
 use Processor\Exceptions\FailedProcessingException;
 use Processor\Rules\RuleSettings;
+use Tests\Helpers\Tools;
 
 class OneOfRuleTest extends \PHPUnit_Framework_TestCase
 {
     public function testOneOfSuccessfulValidator(){
-        $return = DataProcessor::init()->OneOf(DataProcessor::init()->Length(2, 4), DataProcessor::init()->IntCast()->IntType())->setNameForErrors('oneof')->verify("123", true);
+        $return = DataProcessor::init()->oneOf(DataProcessor::init()->length(2, 4), DataProcessor::init()->setTypeInt()->intType())->setNameForErrors('oneof')->verify("123", true);
         $value = DataProcessor::init()->getData();
 
         $this->assertEquals("123", $value);
     }
 
     public function testOneOfSuccessfulFilter(){
-        $return = DataProcessor::init()->OneOf(DataProcessor::init()->Length(2, 4), DataProcessor::init()->IntCast()->IntType())->setNameForErrors('oneof')->verify("123asd", true);
+        $return = DataProcessor::init()->oneOf(DataProcessor::init()->length(2, 4), DataProcessor::init()->setTypeInt()->intType())->setNameForErrors('oneof')->verify("123asd", true);
         $value = DataProcessor::init()->getData();
 
         $this->assertEquals(123, $value);
@@ -32,7 +32,7 @@ class OneOfRuleTest extends \PHPUnit_Framework_TestCase
 
     public function testOneOfError(){
         try {
-            DataProcessor::init()->OneOf(DataProcessor::init()->Length(2, 4), DataProcessor::init()->FloatType())->setNameForErrors('oneof')->verify("1", true);
+            DataProcessor::init()->oneOf(DataProcessor::init()->length(2, 4), DataProcessor::init()->floatType())->setNameForErrors('oneof')->verify("1", true);
         } catch (FailedProcessingException $e) {
 
             $errors = $e->getAllErrors();

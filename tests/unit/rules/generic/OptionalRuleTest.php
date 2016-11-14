@@ -10,7 +10,6 @@ namespace Tests\Unit\Rules\Generic;
 
 use Processor\DataProcessor;
 use Processor\Exceptions\FailedProcessingException;
-
 use Processor\Rules\RuleSettings;
 
 class OptionalRuleTest extends \PHPUnit_Framework_TestCase
@@ -18,28 +17,28 @@ class OptionalRuleTest extends \PHPUnit_Framework_TestCase
 
     public function testNullValue()
     {
-        $return = DataProcessor::init()->Optional(DataProcessor::init()->Numeric())->verify(null);
+        $return = DataProcessor::init()->optional(DataProcessor::init()->numeric())->verify(null);
 
         $this->assertEquals(true, $return);
     }
 
     public function testEmptyStringValue()
     {
-        $return = DataProcessor::init()->Optional(DataProcessor::init()->Numeric())->verify("");
+        $return = DataProcessor::init()->optional(DataProcessor::init()->numeric())->verify("");
 
         $this->assertEquals(true, $return);
     }
 
     public function testEmptyIntegerValue()
     {
-        $return = DataProcessor::init()->Optional(DataProcessor::init()->Numeric())->verify(0);
+        $return = DataProcessor::init()->optional(DataProcessor::init()->numeric())->verify(0);
 
         $this->assertEquals(true, $return);
     }
 
     public function testOptionalNotNullTrue()
     {
-        $result = DataProcessor::init()->Optional(DataProcessor::init()->Numeric())->verify(10);
+        $result = DataProcessor::init()->optional(DataProcessor::init()->numeric())->verify(10);
 
         $this->assertEquals(true, $result);
     }
@@ -48,7 +47,7 @@ class OptionalRuleTest extends \PHPUnit_Framework_TestCase
     public function testOptionalNotNullFalse()
     {
         try {
-            $result = DataProcessor::init()->Optional(DataProcessor::init()->Numeric())->verify("asd");
+            $result = DataProcessor::init()->optional(DataProcessor::init()->numeric())->verify("asd");
         } catch (FailedProcessingException $e) {
 
             $return = false;

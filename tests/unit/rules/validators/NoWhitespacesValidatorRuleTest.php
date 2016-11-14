@@ -16,25 +16,25 @@ use Processor\Rules\RuleSettings;
 class NoWhitespacesRuleTest extends \PHPUnit_Framework_TestCase
 {
     public function testNoWhitespacesFalseExtraCharacters(){
-        $return = DataProcessor::init()->NoWhitespaces("a")->verify("123a");
+        $return = DataProcessor::init()->noWhitespaces("a")->verify("123a");
 
         $this->assertEquals(false, $return);
     }
 
     public function testNoWhitespacesTrue(){
-        $return = DataProcessor::init()->NoWhitespaces()->verify("123");
+        $return = DataProcessor::init()->noWhitespaces()->verify("123");
 
         $this->assertEquals(true, $return);
     }
 
     public function testNoWhitespacesFalse(){
-        $return = DataProcessor::init()->NoWhitespaces()->verify("12a ");
+        $return = DataProcessor::init()->noWhitespaces()->verify("12a ");
 
         $this->assertEquals(false, $return);
     }
 
     public function testNoWhitespacesTrueWithError(){
-        $return = DataProcessor::init()->NoWhitespaces()->verify("123", true);
+        $return = DataProcessor::init()->noWhitespaces()->verify("123", true);
 
         $this->assertEquals(true, $return);
 
@@ -42,7 +42,7 @@ class NoWhitespacesRuleTest extends \PHPUnit_Framework_TestCase
 
     public function testNoWhitespacesFalseWithError(){
         try{
-            DataProcessor::init()->NoWhitespaces()->verify("12a ", true);
+            DataProcessor::init()->noWhitespaces()->verify("12a ", true);
         } catch(FailedProcessingException $e) {
             $return = false;
             $this->assertEquals(1, sizeof($e->getAllErrors()));

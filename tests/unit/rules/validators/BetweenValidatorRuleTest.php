@@ -19,19 +19,19 @@ class BetweenRuleTest extends \PHPUnit_Framework_TestCase
     public function testBetweenTypeError()
     {
         $this->expectException('\Processor\Exceptions\InvalidArgumentException');
-        DataProcessor::init()->Between(2, 4)->verify("asd", true);
+        DataProcessor::init()->between(2, 4)->verify("asd", true);
     }
 
     public function testBetweenInRangeNotInclusive()
     {
-        $return = DataProcessor::init()->Between(2, 5, false)->verify(2);
+        $return = DataProcessor::init()->between(2, 5, false)->verify(2);
 
         $this->assertEquals(false, $return);
     }
 
     public function testBetweenInRangeInclusive()
     {
-        $return = DataProcessor::init()->Between(2, 4)->verify(2);
+        $return = DataProcessor::init()->between(2, 4)->verify(2);
 
         $this->assertEquals(true, $return);
     }
@@ -39,7 +39,7 @@ class BetweenRuleTest extends \PHPUnit_Framework_TestCase
     public function testBetweenOutOfRange()
     {
         try {
-            DataProcessor::init()->Between(2, 4)->verify(5, true);
+            DataProcessor::init()->between(2, 4)->verify(5, true);
         } catch (FailedProcessingException $e) {
             $return = false;
 

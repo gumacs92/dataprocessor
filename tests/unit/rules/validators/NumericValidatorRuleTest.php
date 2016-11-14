@@ -10,8 +10,8 @@ namespace Tests\Unit\Rules\Validators;
 
 use Processor\DataProcessor;
 use Processor\Exceptions\FailedProcessingException;
-use Processor\Rules\RuleSettings;
 use Processor\Rules\NumericRule;
+use Processor\Rules\RuleSettings;
 
 class NumericRuleTest extends \PHPUnit_Framework_TestCase
 {
@@ -25,8 +25,8 @@ class NumericRuleTest extends \PHPUnit_Framework_TestCase
 
     public function testValueIsNumberWithErrors()
     {
-        $return = DataProcessor::init()->Numeric()->verify(10, true);
-        $return1 = DataProcessor::init()->Numeric()->verify("10", true);
+        $return = DataProcessor::init()->numeric()->verify(10, true);
+        $return1 = DataProcessor::init()->numeric()->verify("10", true);
 
         $this->assertEquals(true, $return);
         $this->assertEquals(true, $return1);
@@ -35,7 +35,7 @@ class NumericRuleTest extends \PHPUnit_Framework_TestCase
     public function testValueIsNotNumberWithErrors()
     {
         try{
-            $return = DataProcessor::init()->Numeric()->verify("s", true);
+            $return = DataProcessor::init()->numeric()->verify("s", true);
         }catch(FailedProcessingException $e){
             $this->assertEquals(RuleSettings::getErrorSetting("numeric"), $e->getOneError());
         }
@@ -43,21 +43,21 @@ class NumericRuleTest extends \PHPUnit_Framework_TestCase
 
     public function testValueIsNumber()
     {
-        $return = DataProcessor::init()->Numeric()->verify(10);
+        $return = DataProcessor::init()->numeric()->verify(10);
 
         $this->assertEquals(true, $return);
     }
 
     public function testValueIsNotNumber()
     {
-        $return = DataProcessor::init()->Numeric()->verify("s");
+        $return = DataProcessor::init()->numeric()->verify("s");
 
         $this->assertEquals(false, $return);
     }
 
     public function testValueIsStringNumber()
     {
-        $return = DataProcessor::init()->Numeric()->verify("10");
+        $return = DataProcessor::init()->numeric()->verify("10");
 
         $this->assertEquals(true, $return);
     }

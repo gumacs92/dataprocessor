@@ -17,21 +17,21 @@ class IntTypeRuleTest extends \PHPUnit_Framework_TestCase
 {
     public function testIntTypeTrue()
     {
-        $return = DataProcessor::init()->IntType()->verify(10);
+        $return = DataProcessor::init()->intType()->verify(10);
 
         $this->assertEquals(true, $return);
     }
 
     public function testIntTypeFalse()
     {
-        $return = DataProcessor::init()->IntType()->verify("123");
+        $return = DataProcessor::init()->intType()->verify("123");
 
         $this->assertEquals(false, $return);
     }
 
     public function testIntTypeTrueWithError()
     {
-        $return = DataProcessor::init()->IntType()->verify(10, true);
+        $return = DataProcessor::init()->intType()->verify(10, true);
 
         $this->assertEquals(true, $return);
     }
@@ -39,7 +39,7 @@ class IntTypeRuleTest extends \PHPUnit_Framework_TestCase
     public function testIntTypeFalseWithError()
     {
         try {
-            DataProcessor::init()->IntType()->verify(10.1, true);
+            DataProcessor::init()->intType()->verify(10.1, true);
         } catch (FailedProcessingException $e) {
             $return = false;
             $this->assertEquals(1, sizeof($e->getAllErrors()));

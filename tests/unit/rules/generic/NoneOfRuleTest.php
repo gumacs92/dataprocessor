@@ -17,7 +17,7 @@ use Tests\Helpers\Tools;
 class NoneOfRuleTest extends \PHPUnit_Framework_TestCase
 {
     public function testNoneOfTrue(){
-        $return = DataProcessor::init()->NoneOf(DataProcessor::init()->IntType(), DataProcessor::init()->IntCast()->FloatType())->setNameForErrors('noneof')->verify(10.1);
+        $return = DataProcessor::init()->noneOf(DataProcessor::init()->intType(), DataProcessor::init()->setTypeInt()->floatType())->setNameForErrors('noneof')->verify(10.1);
         $value = DataProcessor::init()->getData();
 
         $this->assertEquals(true, $return);
@@ -25,13 +25,13 @@ class NoneOfRuleTest extends \PHPUnit_Framework_TestCase
     }
 
     public function testNoneOfFalse(){
-            $return = DataProcessor::init()->NoneOf(DataProcessor::init()->Length(2, 4), DataProcessor::init()->FloatType())->setNameForErrors('noneof')->verify("1.1");
+        $return = DataProcessor::init()->noneOf(DataProcessor::init()->length(2, 4), DataProcessor::init()->floatType())->setNameForErrors('noneof')->verify("1.1");
 
             $this->assertEquals(false, $return);
     }
 
     public function testNoneOfTrueWithErrors(){
-        $return = DataProcessor::init()->NoneOf(DataProcessor::init()->IntType(), DataProcessor::init()->IntCast()->FloatType())->setNameForErrors('noneof')->verify(10.1, true);
+        $return = DataProcessor::init()->noneOf(DataProcessor::init()->intType(), DataProcessor::init()->setTypeInt()->floatType())->setNameForErrors('noneof')->verify(10.1, true);
         $value = DataProcessor::init()->getData();
 
         $this->assertEquals(true, $return);
@@ -40,13 +40,13 @@ class NoneOfRuleTest extends \PHPUnit_Framework_TestCase
 
     public function testNoneOfFalseWithErrors(){
         try {
-            DataProcessor::init()->NoneOf(DataProcessor::init()->Length(2, 4), DataProcessor::init()->IntCast()->IntType())->setNameForErrors('noneof')->verify("1.1", true);
+            DataProcessor::init()->noneOf(DataProcessor::init()->length(2, 4), DataProcessor::init()->setTypeInt()->intType())->setNameForErrors('noneof')->verify("1.1", true);
         } catch (FailedProcessingException $e) {
 
             $this->assertEquals(3, sizeof($e->getAllErrors()));
             $this->assertEquals(RuleSettings::getErrorSetting('noneOf'), $e->getAllErrors()[0]);
             $this->assertEquals(Tools::searchAndReplace(RuleSettings::getErrorSetting('length'), ["name" => "noneof", "min" => 2, "max" => 4]), $e->getAllErrors()[1][0]);
-            $this->assertEquals(Tools::searchAndReplace(RuleSettings::getErrorSetting('intCast'), ["name" => "noneof"]), $e->getAllErrors()[2][0]);
+            $this->assertEquals(Tools::searchAndReplace(RuleSettings::getErrorSetting('setTypeInt'), ["name" => "noneof"]), $e->getAllErrors()[2][0]);
         }
     }
 }

@@ -19,19 +19,19 @@ class LengthRuleTest extends \PHPUnit_Framework_TestCase
     public function testLengthTypeError()
     {
         $this->expectException('\Processor\Exceptions\InvalidArgumentException');
-        DataProcessor::init()->Length(2, 4)->setNameForErrors('Length')->verify(1, true);
+        DataProcessor::init()->length(2, 4)->setNameForErrors('Length')->verify(1, true);
     }
 
     public function testLengthInRangeNotInclusive()
     {
-        $return = DataProcessor::init()->Length(2, 4, false)->setNameForErrors('Range')->verify("12");
+        $return = DataProcessor::init()->length(2, 4, false)->setNameForErrors('Range')->verify("12");
 
         $this->assertEquals(false, $return);
     }
 
     public function testLengthInRangeInclusive()
     {
-        $return = DataProcessor::init()->Length(2, 4)->setNameForErrors('Range')->verify("12");
+        $return = DataProcessor::init()->length(2, 4)->setNameForErrors('Range')->verify("12");
 
         $this->assertEquals(true, $return);
     }
@@ -39,7 +39,7 @@ class LengthRuleTest extends \PHPUnit_Framework_TestCase
     public function testLengthOutOfRange()
     {
         try {
-            DataProcessor::init()->Length(2, 4)->setNameForErrors('Range')->verify("1", true);
+            DataProcessor::init()->length(2, 4)->setNameForErrors('Range')->verify("1", true);
         } catch (FailedProcessingException $e) {
 
             $this->assertEquals(1, sizeof($e->getOneError()));
@@ -50,7 +50,7 @@ class LengthRuleTest extends \PHPUnit_Framework_TestCase
     public function testLengthTypeFalse()
     {
         try {
-            DataProcessor::init()->StringType()->Length(2, 4)->setNameForErrors('Length')->verify(1, true);
+            DataProcessor::init()->stringType()->length(2, 4)->setNameForErrors('Length')->verify(1, true);
         } catch (FailedProcessingException $e) {
 
             $this->assertEquals(1, sizeof($e->getOneError()));

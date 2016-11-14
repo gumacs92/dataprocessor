@@ -60,14 +60,14 @@ class FileUploadTest extends \PHPUnit_Framework_TestCase
 
     public function testMultipleFileUploadSuccessful()
     {
-        $return = DataProcessor::init()->Each(DataProcessor::init()->FileNoError()->FileUploaded()->FileMimeType('image/jpeg')->FileSize(100000)->FileMoveUpload('asd', 'd:\Development\testdata\testto\\'))->verify($_FILES);
+        $return = DataProcessor::init()->each(DataProcessor::init()->fileNoError()->fileUploaded()->fileMimeType('image/jpeg')->fileSize(100000)->fileMoveUpload('asd', 'd:\Development\testdata\testto\\'))->verify($_FILES);
 
         $this->assertEquals(true, $return);
     }
 
     public function testUploadSuccessful()
     {
-        $return = DataProcessor::init()->FileNoError()->FileUploaded()->FileMimeType('image/jpeg')->FileSize(100000)->FileMoveUpload('asd', 'd:\Development\testdata\testfrom\\')->verify($_FILES['test']);
+        $return = DataProcessor::init()->fileNoError()->fileUploaded()->fileMimeType('image/jpeg')->fileSize(100000)->fileMoveUpload('asd', 'd:\Development\testdata\testfrom\\')->verify($_FILES['test']);
 
         $this->assertEquals(true, $return);
     }
@@ -76,7 +76,7 @@ class FileUploadTest extends \PHPUnit_Framework_TestCase
     {
         $_FILES['test']['error'] = 1;
         try {
-            DataProcessor::init()->FileNoError()->FileUploaded()->FileMimeType('image/jpeg')->FileSize(100000)->FileMoveUpload('asd', 'd:\Development\testdata\testfrom\\')->verify($_FILES['test'], true);
+            DataProcessor::init()->fileNoError()->fileUploaded()->fileMimeType('image/jpeg')->fileSize(100000)->fileMoveUpload('asd', 'd:\Development\testdata\testfrom\\')->verify($_FILES['test'], true);
         } catch (FailedProcessingException $e) {
             $return = false;
             $expected = RuleSettings::getErrorSetting("fileNoError")['exceeded_default_limit'];
@@ -92,7 +92,7 @@ class FileUploadTest extends \PHPUnit_Framework_TestCase
     {
         $_FILES['test']['tmp_name'] = "";
         try {
-            DataProcessor::init()->FileNoError()->FileUploaded()->FileMimeType('image/jpeg')->FileSize(100000)->FileMoveUpload('asd', 'd:\Development\testdata\testfrom\\')->verify($_FILES['test'], true);
+            DataProcessor::init()->fileNoError()->fileUploaded()->fileMimeType('image/jpeg')->fileSize(100000)->fileMoveUpload('asd', 'd:\Development\testdata\testfrom\\')->verify($_FILES['test'], true);
         } catch (FailedProcessingException $e) {
             $return = false;
             $expected = RuleSettings::getErrorSetting("fileUploaded");
@@ -107,7 +107,7 @@ class FileUploadTest extends \PHPUnit_Framework_TestCase
     public function testUploadFailureAtMimeType()
     {
         try {
-            DataProcessor::init()->init()->FileNoError()->FileUploaded()->FileMimeType('image/png')->FileSize(100000)->FileMoveUpload('asd', 'd:\Development\testdata\testfrom\\')->verify($_FILES['test'], true);
+            DataProcessor::init()->init()->fileNoError()->fileUploaded()->fileMimeType('image/png')->fileSize(100000)->fileMoveUpload('asd', 'd:\Development\testdata\testfrom\\')->verify($_FILES['test'], true);
         } catch (FailedProcessingException $e) {
             $return = false;
             $expected = Tools::searchAndReplace(RuleSettings::getErrorSetting("fileMimeType"), ["mimeType" => "image/png"]);
@@ -122,7 +122,7 @@ class FileUploadTest extends \PHPUnit_Framework_TestCase
     public function testUploadFailureAtFileSize()
     {
         try {
-            DataProcessor::init()->FileNoError()->FileUploaded()->FileMimeType('image/jpeg')->FileSize(300000)->FileMoveUpload('asd', 'd:\Development\testdata\testfrom\\')->verify($_FILES['test'], true);
+            DataProcessor::init()->fileNoError()->fileUploaded()->fileMimeType('image/jpeg')->fileSize(300000)->fileMoveUpload('asd', 'd:\Development\testdata\testfrom\\')->verify($_FILES['test'], true);
         } catch (FailedProcessingException $e) {
             $return = false;
             $expected = Tools::searchAndReplace(RuleSettings::getErrorSetting("fileSize"), ["minSize" => 300000]);

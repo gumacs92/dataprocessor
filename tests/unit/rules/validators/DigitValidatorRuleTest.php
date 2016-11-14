@@ -16,25 +16,25 @@ use Processor\Rules\RuleSettings;
 class DigitRuleTest extends \PHPUnit_Framework_TestCase
 {
     public function testDigitTrueExtraCharacters(){
-        $return = DataProcessor::init()->Digit("asd")->verify("123asd");
+        $return = DataProcessor::init()->digit("asd")->verify("123asd");
 
         $this->assertEquals(true, $return);
     }
 
     public function testDigitTrue(){
-        $return = DataProcessor::init()->Digit()->verify("123");
+        $return = DataProcessor::init()->digit()->verify("123");
 
         $this->assertEquals(true, $return);
     }
 
     public function testDigitFalse(){
-        $return = DataProcessor::init()->Digit()->verify("12a");
+        $return = DataProcessor::init()->digit()->verify("12a");
 
         $this->assertEquals(false, $return);
     }
 
     public function testDigitTrueWithError(){
-        $return = DataProcessor::init()->Digit()->verify("123", true);
+        $return = DataProcessor::init()->digit()->verify("123", true);
 
         $this->assertEquals(true, $return);
 
@@ -42,7 +42,7 @@ class DigitRuleTest extends \PHPUnit_Framework_TestCase
 
     public function testDigitFalseWithError(){
         try{
-            DataProcessor::init()->Digit()->verify("12a", true);
+            DataProcessor::init()->digit()->verify("12a", true);
         } catch(FailedProcessingException $e) {
             $return = false;
             $this->assertEquals(1, sizeof($e->getAllErrors()));

@@ -17,7 +17,7 @@ use Tests\Helpers\Tools;
 class AllOfRuleTest extends \PHPUnit_Framework_TestCase
 {
     public function testAllOfSuccessfulAll(){
-        $return = DataProcessor::init()->AllOf(DataProcessor::init()->Length(2, 4), DataProcessor::init()->IntCast()->IntType())->setNameForErrors('allof')->verify("123", true);
+        $return = DataProcessor::init()->allOf(DataProcessor::init()->length(2, 4), DataProcessor::init()->setTypeInt()->intType())->setNameForErrors('allof')->verify("123", true);
         $value = DataProcessor::init()->getData();
 
         $this->assertEquals(123, $value);
@@ -25,7 +25,7 @@ class AllOfRuleTest extends \PHPUnit_Framework_TestCase
 
     public function testAllOfOneError(){
         try {
-            DataProcessor::init()->AllOf(DataProcessor::init()->Length(2, 4), DataProcessor::init()->FloatType())->setNameForErrors('allof')->verify("111", true);
+            DataProcessor::init()->allOf(DataProcessor::init()->length(2, 4), DataProcessor::init()->floatType())->setNameForErrors('allof')->verify("111", true);
         } catch (FailedProcessingException $e) {
 
             $this->assertEquals(2, sizeof($e->getAllErrors()));
@@ -36,7 +36,7 @@ class AllOfRuleTest extends \PHPUnit_Framework_TestCase
 
     public function testAllOfAllError(){
         try {
-            DataProcessor::init()->AllOf(DataProcessor::init()->Length(2, 4), DataProcessor::init()->FloatType())->setNameForErrors('allof')->verify("1", true);
+            DataProcessor::init()->allOf(DataProcessor::init()->length(2, 4), DataProcessor::init()->floatType())->setNameForErrors('allof')->verify("1", true);
         } catch (FailedProcessingException $e) {
 
             $this->assertEquals(3, sizeof($e->getAllErrors()));

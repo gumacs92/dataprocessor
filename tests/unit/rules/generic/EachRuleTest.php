@@ -18,19 +18,19 @@ class EachRuleTest extends \PHPUnit_Framework_TestCase
 {
     public function testEachSuccess()
     {
-        $return = DataProcessor::init()->Each(DataProcessor::init()->FloatType())->setNameForErrors('each')->verify([10.1, 11.1, 12.1]);
+        $return = DataProcessor::init()->each(DataProcessor::init()->floatType())->setNameForErrors('each')->verify([10.1, 11.1, 12.1]);
         $this->assertEquals(true, $return);
     }
 
     public function testEachFalse()
     {
-            $return = DataProcessor::init()->Each(DataProcessor::init()->FloatType())->setNameForErrors('each')->verify([10, 11, 12]);
+        $return = DataProcessor::init()->each(DataProcessor::init()->floatType())->setNameForErrors('each')->verify([10, 11, 12]);
             $this->assertEquals(false, $return);
     }
 
     public function testEachSuccessWithErrors()
     {
-        $return = DataProcessor::init()->Each(DataProcessor::init()->FloatType())->setNameForErrors('each')->verify([10.1, 11.1, 12.1], true);
+        $return = DataProcessor::init()->each(DataProcessor::init()->floatType())->setNameForErrors('each')->verify([10.1, 11.1, 12.1], true);
         $this->assertEquals(true, $return);
 
     }
@@ -38,7 +38,7 @@ class EachRuleTest extends \PHPUnit_Framework_TestCase
     public function testEachFalseWithErrors()
     {
         try {
-            DataProcessor::init()->Each(DataProcessor::init()->FloatType())->setNameForErrors('each')->verify([10.1, 11, 12], true);
+            DataProcessor::init()->each(DataProcessor::init()->floatType())->setNameForErrors('each')->verify([10.1, 11, 12], true);
         } catch (FailedProcessingException $e) {
 
             $this->assertEquals(2, sizeof($e->getAllErrors()));

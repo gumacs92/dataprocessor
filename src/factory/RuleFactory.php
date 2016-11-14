@@ -28,7 +28,7 @@ class RuleFactory
      * @return AbstractRule
      */
     public function get($rulename){
-        $rulepath = "Processor\\Rules\\" . $rulename . 'Rule';
+        $rulepath = "Processor\\Rules\\" . ucfirst($rulename) . 'Rule';
         return $this->prepareRule($rulename, $rulepath);
     }
 
@@ -42,7 +42,6 @@ class RuleFactory
         if(class_exists($rulepath)){
             /* @var AbstractRule $rulentity */
             $rulentity = new $rulepath();
-            $rulename = lcfirst($rulename);
             $rulentity->setRuleName($rulename);
             return $rulentity;
         }

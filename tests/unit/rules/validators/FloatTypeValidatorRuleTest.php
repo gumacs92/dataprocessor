@@ -17,21 +17,21 @@ class FloatTypeRuleTest extends \PHPUnit_Framework_TestCase
 {
     public function testFloatTypeTrue()
     {
-        $return = DataProcessor::init()->FloatType()->verify(10.1);
+        $return = DataProcessor::init()->floatType()->verify(10.1);
 
         $this->assertEquals(true, $return);
     }
 
     public function testFloatTypeFalse()
     {
-        $return = DataProcessor::init()->FloatType()->verify(10);
+        $return = DataProcessor::init()->floatType()->verify(10);
 
         $this->assertEquals(false, $return);
     }
 
     public function testFloatTypeTrueWithError()
     {
-        $return = DataProcessor::init()->FloatType()->verify(10.1, true);
+        $return = DataProcessor::init()->floatType()->verify(10.1, true);
 
         $this->assertEquals(true, $return);
     }
@@ -39,7 +39,7 @@ class FloatTypeRuleTest extends \PHPUnit_Framework_TestCase
     public function testFloatTypeFalseWithError()
     {
         try {
-            DataProcessor::init()->FloatType()->verify("123", true);
+            DataProcessor::init()->floatType()->verify("123", true);
         } catch (FailedProcessingException $e) {
             $return = false;
             $this->assertEquals(1, sizeof($e->getAllErrors()));

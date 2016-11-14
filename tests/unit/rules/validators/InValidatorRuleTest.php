@@ -16,27 +16,27 @@ use Processor\Rules\RuleSettings;
 class InRuleTest extends \PHPUnit_Framework_TestCase
 {
     public function testInTrue(){
-        $return = DataProcessor::init()->In([10,11,12])->verify(10);
+        $return = DataProcessor::init()->in([10, 11, 12])->verify(10);
 
         $this->assertEquals(true, $return);
     }
 
     public function testInFalse(){
-        $return = DataProcessor::init()->In([10,11,12])->verify(13);
+        $return = DataProcessor::init()->in([10, 11, 12])->verify(13);
 
         $this->assertEquals(false, $return);
     }
 
     public function testInTrueWithErrors(){
 
-        $return = DataProcessor::init()->In([10,11,12])->verify(10, true);
+        $return = DataProcessor::init()->in([10, 11, 12])->verify(10, true);
 
         $this->assertEquals(true, $return);
     }
 
     public function testInFalseWithErrors(){
         try {
-            $return = DataProcessor::init()->In([10,11,12])->verify(13, true);
+            $return = DataProcessor::init()->in([10, 11, 12])->verify(13, true);
         } catch (FailedProcessingException $e) {
 
             $this->assertEquals(1, sizeof($e->getAllErrors()));
