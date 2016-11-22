@@ -32,7 +32,7 @@ class LengthRule extends AbstractRule
             }
             return true;
         } elseif (is_array(self::$data)) {
-            if (sizeof(self::$data) < $min || sizeof(self::$data) > $max) {
+            if (count(self::$data) < $min || count(self::$data) > $max) {
                 return false;
             }
             return true;

@@ -21,6 +21,11 @@ abstract class AbstractRule implements IValidatable
         'name' => '',
     ];
 
+    public function __construct()
+    {
+
+    }
+
     public function rule()
     {
         $this->checkValue();
@@ -99,6 +104,7 @@ abstract class AbstractRule implements IValidatable
 
         $i = 0;
         while ($i < $size_sum) {
+//            foreach ($argsettings[$i]['type'] as $type)
             if (!isset($arguments[$i]) && isset($argsettings[$i]['optional'])) {
                 $this->$argsettings[$i]['field'] = $argsettings[$i]['optional'] === "null" ? null : $argsettings[$i]['optional'];
                 if (isset($argsettings[$i]['template'])) {

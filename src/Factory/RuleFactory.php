@@ -2,7 +2,7 @@
 
 namespace Processor\Factory;
 use Processor\Exceptions\InvalidRuleException;
-use Processor\Rules\AbstractRule;
+use Processor\Rules\Abstraction\AbstractRule;
 
 /**
  * Created by PhpStorm.

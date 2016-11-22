@@ -15,6 +15,7 @@ class RuleSettings
         "allOf" => [["type" => "Processor\\DataProcessor", "field" => "processors", "varying" => true]],
         "alnum" => [["type" => "string", "field" => "extraCharacters", "template" => true, "optional" => ""]],
         "arrayVal" => [],
+        //TODO accepting more types
         "between" => [["type" => "integer", "field" => "min", "template" => true], ["type" => "integer", "field" => "max", "template" => true], ["type" => "bool", "field" => "inclusive", "optional" => true]],
         "boolType" => [],
         "boolVal" => [],
