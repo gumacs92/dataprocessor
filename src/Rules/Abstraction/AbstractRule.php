@@ -167,7 +167,7 @@ abstract class AbstractRule implements IValidatable
     {
         $msg = $message;
         foreach ($this->template as $tag => $value) {
-            if (!empty($value)) {
+            if (!empty($value) && ($value !== 0 || $value !== '')) {
                 $search = "/({{)($tag)(}})/";
                 $replace = $value;
                 $msg = preg_replace($search, $replace, $msg);
