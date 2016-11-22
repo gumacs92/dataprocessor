@@ -18,7 +18,7 @@ class UnicodeAlnumRule extends AbstractRule
     {
         parent::rule();
 
-        $chars = '/(*UTF8)[^\p{L}' . $this->extraCharacters . ']/';
+        $chars = '/(*UTF8)[^\p{L}\p{N}' . $this->extraCharacters . ']/';
         if (preg_match($chars, self::$data)) {
             return false;
         }
