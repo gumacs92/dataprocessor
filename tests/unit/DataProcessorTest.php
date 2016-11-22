@@ -11,7 +11,7 @@ namespace Processor;
 
 
 use Processor\Exceptions\FailedProcessingException;
-use Processor\Rules\RuleSettings;
+use Processor\Rules\Abstraction\RuleSettings;
 
 
 class DataProcessorTest extends \PHPUnit_Framework_TestCase

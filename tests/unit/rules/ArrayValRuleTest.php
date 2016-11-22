@@ -10,12 +10,13 @@ namespace Tests\Unit\Rules;
 
 
 use Processor\Exceptions\RuleException;
+use Processor\Rules\Abstraction\AbstractRule;
+use Processor\Rules\Abstraction\RuleSettings;
 use Processor\Rules\ArrayValRule;
-use Processor\Rules\RuleSettings;
 
 class ArrayValRuleTest extends \PHPUnit_Framework_TestCase
 {
-    /* @var \Processor\Rules\AbstractRule $rule */
+    /* @var AbstractRule $rule */
     private $rule;
 
     public function setUp()

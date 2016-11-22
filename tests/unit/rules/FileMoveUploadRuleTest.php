@@ -9,8 +9,8 @@
 namespace Tests\Unit\Rules;
 
 use Processor\Exceptions\RuleException;
+use Processor\Rules\Abstraction\RuleSettings;
 use Processor\Rules\FileMoveUploadRule;
-use Processor\Rules\RuleSettings;
 use Tests\Helpers\Tools;
 
 class FileMoveUploadRuleTest extends \PHPUnit_Framework_TestCase

@@ -10,7 +10,7 @@ namespace Tests\Unit\Rules;
 
 
 use Processor\Exceptions\RuleException;
-use Processor\Rules\RuleSettings;
+use Processor\Rules\Abstraction\RuleSettings;
 use Processor\Rules\UnicodeAlnumRule;
 
 class UnicodeAlnumRuleTest extends \PHPUnit_Framework_TestCase

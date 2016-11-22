@@ -10,7 +10,7 @@ namespace Processor\Rules;
 
 use Processor\Rules\Abstraction\AbstractRule;
 
-class EscapeHtmlTags extends AbstractRule
+class EscapeHtmlTagsRule extends AbstractRule
 {
     public function rule()
     {

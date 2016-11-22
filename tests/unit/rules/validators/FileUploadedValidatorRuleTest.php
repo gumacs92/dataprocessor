@@ -9,7 +9,7 @@
 namespace Tests\Unit\Rules\Validators;
 
 use Processor\Exceptions\RuleException;
-use Processor\Rules\RuleSettings;
+use Processor\Rules\Abstraction\RuleSettings;
 use Processor\Rules\FileUploadedRule;
 
 

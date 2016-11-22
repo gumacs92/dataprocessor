@@ -50,12 +50,12 @@ class LengthRuleTest extends \PHPUnit_Framework_TestCase
     public function testLengthTypeFalse()
     {
         try {
-            DataProcessor::init()->stringType()->length(2, 4)->setNameForErrors('Length')->verify(1, true);
+            DataProcessor::init()->stringType()->length(0, 4)->setNameForErrors('Length')->verify(5, true);
         } catch (FailedProcessingException $e) {
 
             $this->assertEquals(1, sizeof($e->getOneError()));
             $this->assertEquals(2, sizeof($e->getAllErrors()));
-            $this->assertEquals(Tools::searchAndReplace(RuleSettings::getErrorSetting('stringType'), ["name" => "Length"]), $e->getOneError());
+            $this->assertEquals(Tools::searchAndReplace(RuleSettings::getErrorSetting('stringType'), ["name" => "Length", "min" => 0, "max" => 4]), $e->getOneError());
         }
     }
 }

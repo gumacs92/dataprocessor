@@ -10,8 +10,8 @@ namespace Tests\Unit\Rules\Validators;
 
 use Processor\DataProcessor;
 use Processor\Exceptions\FailedProcessingException;
+use Processor\Rules\Abstraction\RuleSettings;
 use Processor\Rules\NumericRule;
-use Processor\Rules\RuleSettings;
 
 class NumericRuleTest extends \PHPUnit_Framework_TestCase
 {

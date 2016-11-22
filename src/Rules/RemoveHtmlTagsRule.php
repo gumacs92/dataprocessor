@@ -11,7 +11,7 @@ namespace Processor\Rules;
 
 use Processor\Rules\Abstraction\AbstractRule;
 
-class RemoveHtmlTags extends AbstractRule
+class RemoveHtmlTagsRule extends AbstractRule
 {
     protected $config;
 

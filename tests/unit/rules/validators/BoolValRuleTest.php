@@ -10,8 +10,8 @@ namespace Tests\Unit\Rules\Validators;
 
 
 use Processor\Exceptions\RuleException;
+use Processor\Rules\Abstraction\RuleSettings;
 use Processor\Rules\BoolValRule;
-use Processor\Rules\RuleSettings;
 
 class BoolValRuleTest extends \PHPUnit_Framework_TestCase
 {

@@ -10,7 +10,7 @@ namespace Tests\Unit\Rules;
 
 use Processor\DataProcessor;
 use Processor\Exceptions\FailedProcessingException;
-use Processor\Rules\RuleSettings;
+use Processor\Rules\Abstraction\RuleSettings;
 
 class OptionalRuleTest extends \PHPUnit_Framework_TestCase
 {
