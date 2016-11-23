@@ -26,6 +26,7 @@ use Processor\Rules\Abstraction\AbstractRule;
  * @method DataProcessor fileNoError($size = "")
  * @method DataProcessor fileSize($minSize, $maxSize = null)
  * @method DataProcessor fileUploaded()
+ * @method DataProcessor filterValidator($filter, $options = null)
  * @method DataProcessor floatType()
  * @method DataProcessor floatVal()
  * @method DataProcessor in($list, $strict = false)
