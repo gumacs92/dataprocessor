@@ -38,6 +38,7 @@ use Processor\Rules\Abstraction\AbstractRule;
  * @method DataProcessor numeric()
  * @method DataProcessor oneOf(...$processors)
  * @method DataProcessor optional(DataProcessor $rule)
+ * @method DataProcessor phone()
  * @method DataProcessor removeHtmlTags(\HTMLPurifier_Config $config = null)
  * @method DataProcessor setTypeBool()
  * @method DataProcessor setTypeFloat()
