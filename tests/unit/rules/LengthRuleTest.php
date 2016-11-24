@@ -24,14 +24,14 @@ class LengthRuleTest extends \PHPUnit_Framework_TestCase
 
     public function testLengthInRangeNotInclusive()
     {
-        $return = DataProcessor::init()->length(2, 4, false)->setNameForErrors('Range')->verify("12");
+        $return = DataProcessor::init()->length(2, 4, false)->setNameForErrors('Range')->verify([1,2]);
 
         $this->assertEquals(false, $return);
     }
 
     public function testLengthInRangeInclusive()
     {
-        $return = DataProcessor::init()->length(2, 4)->setNameForErrors('Range')->verify("12");
+        $return = DataProcessor::init()->length(2, 4)->setNameForErrors('Range')->verify([1,2,3]);
 
         $this->assertEquals(true, $return);
     }
@@ -39,7 +39,7 @@ class LengthRuleTest extends \PHPUnit_Framework_TestCase
     public function testLengthOutOfRange()
     {
         try {
-            DataProcessor::init()->length(2, 4)->setNameForErrors('Range')->verify("1", true);
+            DataProcessor::init()->length(2, 4)->setNameForErrors('Range')->verify([], true);
         } catch (FailedProcessingException $e) {
 
             $this->assertEquals(1, sizeof($e->getOneError()));

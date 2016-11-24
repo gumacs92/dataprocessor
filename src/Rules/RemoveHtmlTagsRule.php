@@ -19,9 +19,7 @@ class RemoveHtmlTagsRule extends AbstractRule
     {
         parent::rule();
 
-        if (isset($config)) {
-            $this->config = $config;
-        } elseif ($this->config instanceof \HTMLPurifier_Config) {
+        if (!isset($this->config) || !($this->config instanceof \HTMLPurifier_Config)) {
             $this->config = \HTMLPurifier_Config::createDefault();
         } else {
             return false;
