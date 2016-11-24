@@ -9,6 +9,7 @@
 
 namespace Processor\Rules;
 
+use HTMLPurifier_Config;
 use Processor\Rules\Abstraction\AbstractRule;
 
 class RemoveHtmlTagsRule extends AbstractRule
@@ -19,10 +20,8 @@ class RemoveHtmlTagsRule extends AbstractRule
     {
         parent::rule();
 
-        if (!isset($this->config) || !($this->config instanceof \HTMLPurifier_Config)) {
-            $this->config = \HTMLPurifier_Config::createDefault();
-        } else {
-            return false;
+        if (!isset($this->config) || !($this->config instanceof HTMLPurifier_Config)) {
+            $this->config = HTMLPurifier_Config::createDefault();
         }
 
         $purifier = new \HTMLPurifier($this->config);
