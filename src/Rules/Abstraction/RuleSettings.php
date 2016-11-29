@@ -19,6 +19,7 @@ class RuleSettings
         "between" => [["type" => "integer", "field" => "min", "template" => true], ["type" => "integer", "field" => "max", "template" => true], ["type" => "bool", "field" => "inclusive", "optional" => true]],
         "boolType" => [],
         "boolVal" => [],
+        "date" => [["type" => "string", "field" => "format", "template" => true, "optional" => ""], ["type" => "bool", "field" => "convert", "optional" => false]],
         "digit" => [["type" => "string", "field" => "extraCharacters", "template" => true, "optional" => ""]],
         "each" => [["type" => "Processor\\DataProcessor", "field" => "valueProcessor"]], ["type" => "Processor\\DataProcessor", "field" => "keyProcessor", "optional" => "null"],
         "escapeHtmlTags" => [],
@@ -57,6 +58,7 @@ class RuleSettings
         "between" => ["integer", "float"],
         "boolType" => ['mixed'],
         "boolVal" => ['mixed'],
+        "date" => ['mixed'],
         "digit" => ["string"],
         "each" => ["array"],
         "escapeHtmlTags" => ["string"],
@@ -95,6 +97,7 @@ class RuleSettings
         "between" => "{{name}} must be between {{min}} and {{max}}",
         "boolType" => "{{name}} is not a boolean type",
         "boolVal" => "{{name}} is not a boolean value",
+        "date" => "{{name}} is not date format {{format}}",
         //TODO extra
         "digit" => "{{name}} must contain only digits",
         "each" => "For each value the following criteria must met:",

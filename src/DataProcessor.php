@@ -18,6 +18,7 @@ use Processor\Rules\Abstraction\AbstractRule;
  * @method DataProcessor between($min, $max, $inclusive = true);
  * @method DataProcessor boolType()
  * @method DataProcessor boolVal()
+ * @method DataProcessor date($format = "", $convert = false)
  * @method DataProcessor digit($extraCharacters = "")
  * @method DataProcessor each($valueProcessor, $keyProcessor = null)
  * @method DataProcessor escapeHtmlTags()
