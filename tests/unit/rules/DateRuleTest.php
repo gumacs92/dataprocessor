@@ -25,26 +25,26 @@ class DateRuleTest extends \PHPUnit_Framework_TestCase
         $this->rule = new DateRule();
         $this->rule->setRuleName('date');
 
-        $this->rule->checkArguments(["Y-m-d", false]);
+        $this->rule->checkArguments(["m/d/Y h:i a", false]);
     }
 
-    public function testPhoneTrue()
+    public function testDateTrue()
     {
         $return = $this->rule->verify(new \DateTime());
-        $return1 = $this->rule->verify("2012-02-12");
+        $return1 = $this->rule->verify("11/28/2016 5:35 PM");
 
         $this->assertEquals(true, $return);
         $this->assertEquals(true, $return1);
     }
 
-    public function testPhoneFalse()
+    public function testDateFalse()
     {
         $return = $this->rule->verify("12-aáéű@:.;,?!%");
 
         $this->assertEquals(false, $return);
     }
 
-    public function testPhoneTrueWithError()
+    public function testDateTrueWithError()
     {
         $return = $this->rule->verify("now", true);
 
@@ -52,14 +52,14 @@ class DateRuleTest extends \PHPUnit_Framework_TestCase
 
     }
 
-    public function testPhoneFalseWithError()
+    public function testDateFalseWithError()
     {
         try {
             $this->rule->verify("123-aáéű webcam1", true);
         } catch (RuleException $e) {
             $return = false;
             $this->assertEquals(1, sizeof($e->getErrorMessage()));
-            $this->assertEquals(Tools::searchAndReplace(RuleSettings::getErrorSetting("date"), ["format" => "Y-m-d"]), $e->getErrorMessage());
+            $this->assertEquals(Tools::searchAndReplace(RuleSettings::getErrorSetting("date"), ["format" => "m/d/Y h:i a"]), $e->getErrorMessage());
         } finally {
             $this->assertEquals(false, $return);
         }

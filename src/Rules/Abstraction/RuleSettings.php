@@ -20,6 +20,7 @@ class RuleSettings
         "boolType" => [],
         "boolVal" => [],
         "date" => [["type" => "string", "field" => "format", "template" => true, "optional" => ""], ["type" => "bool", "field" => "convert", "optional" => false]],
+        "dateFormat" => [["type" => "string", "field" => "format", "template" => true]],
         "digit" => [["type" => "string", "field" => "extraCharacters", "template" => true, "optional" => ""]],
         "each" => [["type" => "Processor\\DataProcessor", "field" => "valueProcessor"]], ["type" => "Processor\\DataProcessor", "field" => "keyProcessor", "optional" => "null"],
         "escapeHtmlTags" => [],
@@ -59,6 +60,7 @@ class RuleSettings
         "boolType" => ['mixed'],
         "boolVal" => ['mixed'],
         "date" => ['mixed'],
+        "dateFormat" => ['DateTimeInterface'],
         "digit" => ["string"],
         "each" => ["array"],
         "escapeHtmlTags" => ["string"],
@@ -98,6 +100,7 @@ class RuleSettings
         "boolType" => "{{name}} is not a boolean type",
         "boolVal" => "{{name}} is not a boolean value",
         "date" => "{{name}} is not date format {{format}}",
+        "dateFormat" => "Cannot convert {{name}} to {{format}}",
         //TODO extra
         "digit" => "{{name}} must contain only digits",
         "each" => "For each value the following criteria must met:",

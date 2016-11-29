@@ -22,24 +22,34 @@ class DateRule extends AbstractRule
     {
         parent::rule();
 
-        if(is_string(self::$data)){
+        if (is_string(self::$data)) {
             $result = strtotime(self::$data);
-            if($result !== false && $this->convert === true){
+            if ($result !== false && $this->convert === true) {
                 self::$data = $result;
+                self::$data = new DateTime(self::$data);
                 return true;
-            } elseif($result !== false && $this->convert === false) {
+            } elseif ($result !== false && $this->convert === false) {
                 return true;
             }
 
-            if(empty($this->format)){
+            if (empty($this->format)) {
                 return false;
-            }else{
+            } else {
                 $return = date_parse_from_format($this->format, self::$data);
 
-                return $return['error_count'] === 0 && $return['warning_count'] === 0;
+                if ($return['error_count'] === 0 && $return['warning_count'] === 0) {
+
+                    if ($this->convert === true) {
+                        self::$data = DateTime::createFromFormat($this->format, self::$data);
+                    }
+
+                    return true;
+                } else {
+                    return false;
+                }
             }
 
-        }elseif(self::$data instanceof DateTime || self::$data instanceof DateTimeInterface){
+        } elseif (self::$data instanceof DateTime || self::$data instanceof DateTimeInterface) {
             return true;
         }
 
