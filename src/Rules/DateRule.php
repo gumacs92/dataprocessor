@@ -23,16 +23,17 @@ class DateRule extends AbstractRule
         parent::rule();
 
         if (is_string(self::$data)) {
-            $result = strtotime(self::$data);
-            if ($result !== false && $this->convert === true) {
-                self::$data = $result;
-                self::$data = new DateTime(self::$data);
-                return true;
-            } elseif ($result !== false && $this->convert === false) {
-                return true;
-            }
-
             if (empty($this->format)) {
+                $result = strtotime(self::$data);
+                if ($result !== false && $this->convert === true) {
+                    self::$data = $result;
+                    //TODO buggy what if datetime failes...
+                    self::$data = new DateTime(self::$data);
+                    return true;
+                } elseif ($result !== false && $this->convert === false) {
+                    return true;
+                }
+
                 return false;
             } else {
                 $return = date_parse_from_format($this->format, self::$data);

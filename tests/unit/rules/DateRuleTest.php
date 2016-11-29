@@ -46,6 +46,7 @@ class DateRuleTest extends \PHPUnit_Framework_TestCase
 
     public function testDateTrueWithError()
     {
+        $this->rule->checkArguments([]);
         $return = $this->rule->verify("now", true);
 
         $this->assertEquals(true, $return);
