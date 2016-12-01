@@ -47,14 +47,14 @@ class OptionalRuleTest extends \PHPUnit_Framework_TestCase
     public function testOptionalNotNullFalse()
     {
         try {
-            $result = DataProcessor::init()->optional(DataProcessor::init()->numeric())->verify("asd");
+            $return = DataProcessor::init()->optional(DataProcessor::init()->numeric())->verify("asd");
         } catch (FailedProcessingException $e) {
 
             $return = false;
             $this->assertEquals(1, sizeof($e->getErrors()['optional']));
-            $this->assertEquals(RuleSettings::getErrorSetting("numeric"), $e->getAllErrors()['optional'][['optional0']['nuemric']]);
+            $this->assertEquals(RuleSettings::getErrorSetting("numeric"), $e->getErrors()['optional'][['optional0']['nuemric']]);
         } finally {
-            $this->assertEquals(false, $result);
+            $this->assertEquals(false, $return);
         }
     }
 }

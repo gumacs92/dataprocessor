@@ -47,7 +47,7 @@ class AllOfRule extends AbstractRule
                 }
             } catch (FailedProcessingException $e) {
                 $failed = true;
-                $this->addDataProcessorErrors($e->getErrors());
+                $this->addReturnErrors($e->getErrors());
                 $this->data = $oldData;
             }
         }

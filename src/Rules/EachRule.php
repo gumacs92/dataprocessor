@@ -45,7 +45,7 @@ class EachRule extends AbstractRule
                     $this->data = $this->valueProcessor->getData();
                 } catch (FailedProcessingException $e) {
                     $valuesuccess = false;
-                    $this->addDataProcessorErrors($e->getErrors());
+                    $this->addReturnErrors($e->getErrors());
                     $value = $oldData;
                 }
             }
@@ -57,7 +57,7 @@ class EachRule extends AbstractRule
                     $this->data = $this->keyProcessor->getData();
                 } catch (FailedProcessingException $e) {
                     $keysuccess = false;
-                    $this->addDataProcessorErrors($e->getErrors());
+                    $this->addReturnErrors($e->getErrors());
                     $key = $oldData;
                 }
             }

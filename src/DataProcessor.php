@@ -53,6 +53,8 @@ class DataProcessor extends AbstractRule
 {
     private static $returnData;
 
+    private $strict;
+
     private $ruleList = [];
 
     public static function init()
@@ -104,12 +106,11 @@ class DataProcessor extends AbstractRule
         $this->data = $data;
         $this->feedback = $feedback;
 
-        $this->rule();
+        $return = $this->rule();
 
         $errors = $this->getReturnErrors();
 
-        //TODO better error process but the logic is here already
-        if(empty($errors)){
+        if($return){
             self::$returnData = $this->data;
             return true;
         } else {
@@ -133,6 +134,8 @@ class DataProcessor extends AbstractRule
 
     public function rule()
     {
+        $failed = false;
+
         /* @var AbstractRule $rule */
         foreach ($this->ruleList as $rule) {
             $rule->setName($this->name);
@@ -141,10 +144,13 @@ class DataProcessor extends AbstractRule
             if($result){
                 $this->data = $rule->getData();
             }else{
+                $failed = true;
                 $error = $rule->getReturnErrors();
                 $this->returnErrors[key($error)] = current($error);
             }
         }
+
+        return $failed ? false : true;
     }
 
     public function getMockedErrors()

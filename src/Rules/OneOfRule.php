@@ -47,7 +47,7 @@ class OneOfRule extends AbstractRule
                 }
             } catch (FailedProcessingException $e) {
                 $this->data = $oldData;
-                $this->addDataProcessorErrors($e->getErrors());
+                $this->addReturnErrors($e->getErrors());
             }
         }
 

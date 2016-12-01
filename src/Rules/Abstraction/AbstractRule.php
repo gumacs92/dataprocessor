@@ -15,13 +15,12 @@ abstract class AbstractRule implements IValidatable
 {
     protected $data;
     protected $feedback;
-    protected $name;
+
     protected $error = "";
+
     protected $returnErrors = [];
     protected $ruleName;
-    protected $template = [
-        'name' => '',
-    ];
+    protected $name;
 
     public function __construct()
     {
@@ -38,17 +37,21 @@ abstract class AbstractRule implements IValidatable
         $this->feedback = $feedback;
         if (!$this->rule()) {
             if (empty($this->returnErrors)) {
-                $this->returnErrors[$this->ruleName] = $this->getMockedErrorMessage();
+                $this->addReturnError();
             }
             return false;
         }
         return true;
     }
 
-
-    protected final function addDataProcessorErrors($errors)
+    protected final function addReturnError()
     {
-        if (!key_exists($this->ruleName, $this->returnErrors)) {
+        $this->returnErrors[$this->ruleName] = $this->getMockedErrorMessage();
+    }
+
+    protected final function addReturnErrors($errors)
+    {
+        if (!key_exists($this->ruleName, $this->returnErrors) && $this->feedback !== Errors::NONE) {
             $this->returnErrors[$this->ruleName][$this->ruleName] = $this->getMockedErrorMessage();
         }
 
@@ -161,10 +164,8 @@ abstract class AbstractRule implements IValidatable
         }
         if ($name === null) {
             $this->name = null;
-            $this->template['name'] = '';
         } else {
             $this->name = $name;
-            $this->template['name'] = $name;
         }
         return $this;
 

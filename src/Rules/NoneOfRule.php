@@ -46,10 +46,10 @@ class NoneOfRule extends AbstractRule
                     $failed = true;
                     $this->data = $oldData;
 //                    $errors[] = $proc->getMockedErrors();
-                    $this->addDataProcessorErrors($proc->getMockedErrors());
+                    $this->addReturnErrors($proc->getMockedErrors());
                 }
             } catch (FailedProcessingException $e) {
-                $this->addDataProcessorErrors($e->getErrors());
+                $this->addReturnErrors($e->getErrors());
                 $this->data = $oldData;
             }
         }

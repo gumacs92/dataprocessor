@@ -32,17 +32,18 @@ class OptionalRule extends AbstractRule
                 $this->processor->setName($this->name);
                 $return = $this->processor->verify($this->data, $this->feedback);
 
-                if ($return)
+                if ($return) {
                     $this->data = $this->processor->getData();
-                else
-                    $this->addDataProcessorErrors($this->processor->getMockedErrors());
-
+                } else {
+                    $this->addReturnErrors($this->processor->getMockedErrors());
+                }
 
             } catch (FailedProcessingException $e) {
-                $this->addDataProcessorErrors($e->getErrors());
+                $this->addReturnErrors($e->getErrors());
             }
-            if (empty($this->returnErrors))
+            if ($return) {
                 return true;
+            }
             return false;
         }
     }
