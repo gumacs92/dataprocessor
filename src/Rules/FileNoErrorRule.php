@@ -15,18 +15,21 @@ class FileNoErrorRule extends AbstractRule
 {
     protected $size = "";
 
+    public function __construct($size = null)
+    {
+        parent::__construct();
+
+        $this->size = $this->typeCheck($size, 'numeric');
+    }
+
     public function rule()
     {
-        parent::rule();
-
-        if(isset(self::$data['error'])){
-
-        } else {$this->returnErrors['invalid_value_type_error'] = 'Fatal error: expected _FILES["uploaded_file"] type for the processed value but got ' . gettype(self::$data) .
-            ' in the rule ' . get_class($this);
-            throw new InvalidArgumentException($this->returnErrors['invalid_value_type_error']);
-
+        if(!isset($this->data['error'])){
+            throw new InvalidArgumentException('Fatal error: expected _FILES["uploaded_file"] type for the processed value but got ' . gettype($this->data) .
+            ' in the rule ' . get_class($this));
         }
-        $file = self::$data;
+
+        $file = $this->data;
 
         switch ($file['error']) {
             case UPLOAD_ERR_OK:

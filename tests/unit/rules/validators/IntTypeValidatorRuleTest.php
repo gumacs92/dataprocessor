@@ -11,6 +11,7 @@ namespace Tests\Unit\Rules\Validators;
 
 use Processor\DataProcessor;
 use Processor\Exceptions\FailedProcessingException;
+use Processor\Rules\Abstraction\Errors;
 use Processor\Rules\Abstraction\RuleSettings;
 
 class IntTypeRuleTest extends \PHPUnit_Framework_TestCase
@@ -31,7 +32,7 @@ class IntTypeRuleTest extends \PHPUnit_Framework_TestCase
 
     public function testIntTypeTrueWithError()
     {
-        $return = DataProcessor::init()->intType()->verify(10, true);
+        $return = DataProcessor::init()->intType()->verify(10, Errors::ALL);
 
         $this->assertEquals(true, $return);
     }
@@ -39,11 +40,11 @@ class IntTypeRuleTest extends \PHPUnit_Framework_TestCase
     public function testIntTypeFalseWithError()
     {
         try {
-            DataProcessor::init()->intType()->verify(10.1, true);
+            DataProcessor::init()->intType()->verify(10.1, Errors::ALL);
         } catch (FailedProcessingException $e) {
             $return = false;
-            $this->assertEquals(1, sizeof($e->getAllErrors()));
-            $this->assertEquals(RuleSettings::getErrorSetting("intType"), $e->getAllErrors()[0]);
+            $this->assertEquals(1, sizeof($e->getErrors()));
+            $this->assertEquals(RuleSettings::getErrorSetting("intType"), $e->getErrors()["intType"]);
         } finally {
             $this->assertEquals(false, $return);
         }

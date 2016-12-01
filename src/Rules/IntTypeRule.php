@@ -14,7 +14,6 @@ class IntTypeRule extends AbstractRule
 {
     public function rule()
     {
-        parent::rule();
-        return is_int(self::$data);
+        return is_int($this->data);
     }
 }

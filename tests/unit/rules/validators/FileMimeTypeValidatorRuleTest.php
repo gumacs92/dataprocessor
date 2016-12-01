@@ -10,6 +10,7 @@ namespace Tests\Unit\Rules\Validators;
 
 
 use Processor\Exceptions\RuleException;
+use Processor\Rules\Abstraction\Errors;
 use Processor\Rules\Abstraction\RuleSettings;
 use Processor\Rules\FileMimeTypeRule;
 use Tests\Helpers\Tools;
@@ -21,9 +22,7 @@ class FileMimeTypeRuleTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $this->rule = new FileMimeTypeRule();
-        $this->rule->setRuleName("fileMimeType");
-        $this->rule->checkArguments(['image/jpeg']);
+        $this->rule = new FileMimeTypeRule('image/jpeg');
 
         $_FILES = array(
             'test' => array(
@@ -37,20 +36,20 @@ class FileMimeTypeRuleTest extends \PHPUnit_Framework_TestCase
     }
 
     public function testFileMimeTypeTrue(){
-        $return = $this->rule->verify($_FILES['test']);
+        $return = $this->rule->process($_FILES['test']);
 
         $this->assertEquals(true, $return);
     }
 
     public function testFileMimeTypeFalse(){
         $_FILES['test']['tmp_name'] = 'd:\Development\testdata\testfrom\test.php';
-        $return = $this->rule->verify($_FILES['test']);
+        $return = $this->rule->process($_FILES['test']);
 
         $this->assertEquals(false, $return);
     }
 
     public function testFileMimeTypeTrueWithErrors(){
-        $return = $this->rule->verify($_FILES['test'], true);
+        $return = $this->rule->process($_FILES['test'], Errors::ALL);
 
         $this->assertEquals(true, $return);
     }
@@ -58,7 +57,7 @@ class FileMimeTypeRuleTest extends \PHPUnit_Framework_TestCase
     public function testFileMimeTypeFalseWithErrors(){
         $_FILES['test']['tmp_name'] = 'd:\Development\testdata\testfrom\test.php';
         try{
-            $this->rule->verify($_FILES['test'], true);
+            $return = $this->rule->process($_FILES['test'], Errors::ALL);
         } catch (RuleException $e){
             $return = false;
             $this->assertEquals(Tools::searchAndReplace(RuleSettings::getErrorSetting('fileMimeType'), ["mimeType" => "image/jpeg"]), $e->getErrorMessage());

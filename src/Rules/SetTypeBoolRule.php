@@ -14,7 +14,6 @@ class SetTypeBoolRule extends AbstractRule
 {
     public function rule()
     {
-        parent::rule();
-        return settype(self::$data, 'bool');
+        return settype($this->data, 'bool');
     }
 }

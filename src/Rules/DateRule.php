@@ -18,17 +18,23 @@ class DateRule extends AbstractRule
     protected $format;
     protected $convert;
 
+    public function __construct($format = '', $convert= false)
+    {
+        parent::__construct();
+
+        $this->format = $this->typeCheck($format, "string");
+        $this->convert = $this->typeCheck($convert, "bool");
+    }
+
     public function rule()
     {
-        parent::rule();
-
-        if (is_string(self::$data)) {
+        if (is_string($this->data)) {
             if (empty($this->format)) {
-                $result = strtotime(self::$data);
+                $result = strtotime($this->data);
                 if ($result !== false && $this->convert === true) {
-                    self::$data = $result;
-                    //TODO buggy what if datetime failes...
-                    self::$data = new DateTime(self::$data);
+                    $this->data = $result;
+                    $this->data = date("Y-m-d H:i:s", $this->data);
+                    $this->data = new DateTime($this->data);
                     return true;
                 } elseif ($result !== false && $this->convert === false) {
                     return true;
@@ -36,12 +42,12 @@ class DateRule extends AbstractRule
 
                 return false;
             } else {
-                $return = date_parse_from_format($this->format, self::$data);
+                $return = date_parse_from_format($this->format, $this->data);
 
                 if ($return['error_count'] === 0 && $return['warning_count'] === 0) {
 
                     if ($this->convert === true) {
-                        self::$data = DateTime::createFromFormat($this->format, self::$data);
+                        $this->data = DateTime::createFromFormat($this->format, $this->data);
                     }
 
                     return true;
@@ -50,7 +56,7 @@ class DateRule extends AbstractRule
                 }
             }
 
-        } elseif (self::$data instanceof DateTime || self::$data instanceof DateTimeInterface) {
+        } elseif ($this->data instanceof DateTime || $this->data instanceof DateTimeInterface) {
             return true;
         }
 

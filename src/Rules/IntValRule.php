@@ -14,8 +14,6 @@ class IntValRule extends AbstractRule
 {
     public function rule()
     {
-        parent::rule();
-
-        return is_int(filter_var(self::$data, FILTER_VALIDATE_INT));
+        return is_int(filter_var($this->data, FILTER_VALIDATE_INT));
     }
 }

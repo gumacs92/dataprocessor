@@ -11,6 +11,7 @@ namespace Tests\Unit\Rules\Validators;
 
 use Processor\DataProcessor;
 use Processor\Exceptions\FailedProcessingException;
+use Processor\Rules\Abstraction\Errors;
 use Processor\Rules\Abstraction\RuleSettings;
 use Tests\Helpers\Tools;
 
@@ -19,7 +20,7 @@ class BetweenRuleTest extends \PHPUnit_Framework_TestCase
     public function testBetweenTypeError()
     {
         $this->expectException('\Processor\Exceptions\InvalidArgumentException');
-        DataProcessor::init()->between(2, 4)->verify("asd", true);
+        DataProcessor::init()->between(2, 'asd')->verify("asd", Errors::ALL);
     }
 
     public function testBetweenInRangeNotInclusive()
@@ -39,12 +40,12 @@ class BetweenRuleTest extends \PHPUnit_Framework_TestCase
     public function testBetweenOutOfRange()
     {
         try {
-            DataProcessor::init()->between(2, 4)->verify(5, true);
+            DataProcessor::init()->between(2, 4)->verify(5, Errors::ALL);
         } catch (FailedProcessingException $e) {
             $return = false;
 
-            $this->assertEquals(1, sizeof($e->getOneError()));
-            $this->assertEquals(Tools::searchAndReplace(RuleSettings::getErrorSetting('between'), ["min" => 2, "max" => 4]), $e->getOneError());
+            $this->assertEquals(1, sizeof($e->getErrors()));
+            $this->assertEquals(Tools::searchAndReplace(RuleSettings::getErrorSetting('between'), ["min" => 2, "max" => 4]), $e->getErrors()['between']);
         } finally {
             $this->assertEquals(false, $return);
         }

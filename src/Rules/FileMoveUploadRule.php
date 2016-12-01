@@ -21,13 +21,24 @@ class FileMoveUploadRule extends AbstractRule
     protected $fullPath;
     protected $delete;
 
+    public function __construct($uniqueId, $uploadPath, $uploadName = null, $extension = null, $fullPath = false, $delete = true)
+    {
+        parent::__construct();
+
+        $this->uniqueId = $this->typeCheck($uniqueId, 'string');
+        $this->uploadPath = $this->typeCheck($uploadPath, 'string');
+
+        $this->uploadName = $this->typeCheck($uploadName, 'string');
+        $this->extension = $this->typeCheck($extension, 'string');
+        $this->fullPath = $this->typeCheck($fullPath, 'bool');
+        $this->delete = $this->typeCheck($delete, 'bool');
+    }
+
     public function rule()
     {
-        parent::rule();
-
-        if (isset(self::$data['tmp_name']) && isset(self::$data['name'])) {
-            $tmpfile = new \SplFileInfo(self::$data['tmp_name']);
-            $file = new \SplFileInfo(self::$data['name']);
+        if (isset($this->data['tmp_name']) && isset($this->data['name'])) {
+            $tmpfile = new \SplFileInfo($this->data['tmp_name']);
+            $file = new \SplFileInfo($this->data['name']);
 
             $pathname = $tmpfile->getPathname();
 
@@ -45,8 +56,8 @@ class FileMoveUploadRule extends AbstractRule
                 $this->uploadName = sha1($this->uniqueId . "_" . $file->getBasename('.' . $this->extension));
             }
 
-        } elseif (is_string(self::$data) && is_file(self::$data)) {
-            $tmpfile = new \SplFileInfo(self::$data);
+        } elseif (is_string($this->data) && is_file($this->data)) {
+            $tmpfile = new \SplFileInfo($this->data);
 
             $pathname = $tmpfile->getPathname();
 
@@ -66,9 +77,9 @@ class FileMoveUploadRule extends AbstractRule
                 $ext = $tmpfile->getExtension();
                 $this->uploadName = sha1($this->uniqueId . "_" . $tmpfile->getBasename('.' . $ext));
             }
-        } elseif (self::$data instanceof \SplFileInfo) {
+        } elseif ($this->data instanceof \SplFileInfo) {
             /* @var \SplFileInfo $tmpfile */
-            $tmpfile = self::$data;
+            $tmpfile = $this->data;
 
             $pathname = $tmpfile->getPathname();
 
@@ -106,9 +117,9 @@ class FileMoveUploadRule extends AbstractRule
 
 
         if (!$this->fullPath) {
-            self::$data = $savename;
+            $this->data = $savename;
         } else {
-            self::$data = $uploadhere;
+            $this->data = $uploadhere;
         }
 
         if (!move_uploaded_file($pathname, $uploadhere)) {

@@ -14,14 +14,13 @@ class FileUploadedRule extends AbstractRule
 {
     public function rule()
     {
-        parent::rule();
-        if (isset(self::$data['tmp_name'])) {
-            $tmpfile = new \SplFileInfo(self::$data['tmp_name']);
+        if (isset($this->data['tmp_name'])) {
+            $tmpfile = new \SplFileInfo($this->data['tmp_name']);
 
-        } elseif (is_string(self::$data)) {
-            $tmpfile = new \SplFileInfo(self::$data);
-        } elseif (self::$data instanceof \SplFileInfo) {
-            $tmpfile = self::$data;
+        } elseif (is_string($this->data)) {
+            $tmpfile = new \SplFileInfo($this->data);
+        } elseif ($this->data instanceof \SplFileInfo) {
+            $tmpfile = $this->data;
         } else {
             return false;
         }

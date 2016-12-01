@@ -18,7 +18,7 @@ class IfThenElse extends AbstractRule
 
     public function rule()
     {
-        parent::rule();
+
     }
 
 }

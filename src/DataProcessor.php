@@ -4,9 +4,9 @@ namespace Processor;
 
 
 use Processor\Exceptions\FailedProcessingException;
-use Processor\Exceptions\RuleException;
 use Processor\Factory\RuleFactory;
 use Processor\Rules\Abstraction\AbstractRule;
+use Processor\Rules\Abstraction\Errors;
 
 
 /**
@@ -51,9 +51,12 @@ use Processor\Rules\Abstraction\AbstractRule;
  */
 class DataProcessor extends AbstractRule
 {
+    private static $returnData;
+
     private $ruleList = [];
 
-    public static function init(){
+    public static function init()
+    {
         if (!defined('DS')) {
             define("DS", DIRECTORY_SEPARATOR);
         }
@@ -89,77 +92,85 @@ class DataProcessor extends AbstractRule
 
     public function searchRule($name, $arguments)
     {
-        /* @var AbstractRule $ruleClass; */
-        $ruleClass = $this->retrieveRule($name);
-        $ruleClass->checkArguments($arguments);
+        /* @var AbstractRule $ruleClass ; */
+        $factory = new RuleFactory();
+        $ruleClass = $factory->get($name, $arguments);
 
         return $ruleClass;
     }
 
-    public function retrieveRule($name)
-    {
-        $factory = new RuleFactory();
 
-        $ruleClass = $factory->get($name);
+    public function verify($data, $feedback = Errors::NONE){
+        $this->data = $data;
+        $this->feedback = $feedback;
 
-        return $ruleClass;
+        $this->rule();
+
+        $errors = $this->getReturnErrors();
+
+        //TODO better error process but the logic is here already
+        if(empty($errors)){
+            self::$returnData = $this->data;
+            return true;
+        } else {
+            switch ($feedback){
+                case Errors::NONE:
+                    return false;
+                    break;
+                case Errors::ONE:
+                    throw new FailedProcessingException([key($errors) => current($errors)]);
+                    break;
+                case Errors::ALL:
+                    throw new FailedProcessingException($errors);
+                    break;
+                default:
+                    return false;
+                    break;
+            }
+        }
+
     }
 
     public function rule()
     {
-    }
-
-    public function process()
-    {
-        $failed = false;
-
         /* @var AbstractRule $rule */
         foreach ($this->ruleList as $rule) {
-            $rule->setNameForErrors($this->nameForErrors);
-            $result = $rule->process();
+            $rule->setName($this->name);
+            $result = $rule->process($this->data, $this->feedback);
 
-            if(!$result){
-                $failed = true;
-                break;
+            if($result){
+                $this->data = $rule->getData();
+            }else{
+                $error = $rule->getReturnErrors();
+                $this->returnErrors[key($error)] = current($error);
             }
         }
-
-        return $failed ? false : true;
     }
 
-    public function processWithErrors()
+    public function getMockedErrors()
     {
-        $failed = false;
-
-        /* @var AbstractRule $rule */
-        foreach ($this->ruleList as $rule) {
-            $rule->setNameForErrors($this->nameForErrors);
-            if(!$failed){
-                try {
-                    $rule->processWithErrors();
-
-                } catch (RuleException $e) {
-                    $failed = true;
-                    $this->returnErrors[] = $e->getErrorMessage();
-                }
-            } else{
-                $this->returnErrors[] = $rule->getActualErrorMessage();
-            }
-
-        }
-        if($failed){
-            throw new FailedProcessingException($this->returnErrors);
-        }
-        return true;
-    }
-
-    public function getMockedErrors(){
         $errors = [];
         /* @var AbstractRule $rule */
-        foreach($this->ruleList as $rule){
-            $errors[] = $rule->getActualErrorMessage();
+        foreach ($this->ruleList as $rule) {
+            $errors[$rule->ruleName] = $rule->getMockedErrorMessage();
         }
-        return $errors;
+
+        if($this->feedback === Errors::ONE){
+            return [key($errors) => current($errors)];
+        }elseif($this->feedback === Errors::ALL){
+            return $errors;
+        }
+        return [];
     }
+
+    /**
+     * @return mixed
+     */
+    public static function getReturnData()
+    {
+        return self::$returnData;
+    }
+
+
 
 }

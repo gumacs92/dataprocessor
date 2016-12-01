@@ -14,7 +14,6 @@ class BoolTypeRule extends AbstractRule
 {
     public function rule()
     {
-        parent::rule();
-        return is_bool(self::$data);
+        return is_bool($this->data);
     }
 }

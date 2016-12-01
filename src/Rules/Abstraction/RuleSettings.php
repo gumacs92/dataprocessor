@@ -11,86 +11,6 @@ namespace Processor\Rules\Abstraction;
 
 class RuleSettings
 {
-    private static $expectedArguments = [
-        "allOf" => [["type" => "Processor\\DataProcessor", "field" => "processors", "varying" => true]],
-        "alnum" => [["type" => "string", "field" => "extraCharacters", "template" => true, "optional" => ""]],
-        "arrayVal" => [],
-        //TODO accepting more types
-        "between" => [["type" => "integer", "field" => "min", "template" => true], ["type" => "integer", "field" => "max", "template" => true], ["type" => "bool", "field" => "inclusive", "optional" => true]],
-        "boolType" => [],
-        "boolVal" => [],
-        "date" => [["type" => "string", "field" => "format", "template" => true, "optional" => ""], ["type" => "bool", "field" => "convert", "optional" => false]],
-        "dateFormat" => [["type" => "string", "field" => "format", "template" => true]],
-        "digit" => [["type" => "string", "field" => "extraCharacters", "template" => true, "optional" => ""]],
-        "each" => [["type" => "Processor\\DataProcessor", "field" => "valueProcessor"]], ["type" => "Processor\\DataProcessor", "field" => "keyProcessor", "optional" => "null"],
-        "escapeHtmlTags" => [],
-        "fileMimeType" => [["type" => "string", "field" => "mimeType", "template" => true]],
-        "fileMoveUpload" => [["type" => "string", "field" => "uniqueId"], ["type" => "string", "field" => "uploadPath", "template" => true], ["type" => "string", "field" => "uploadName", "optional" => "null"], ["type" => "string", "field" => "extension", "optional" => "null"], ["type" => "bool", "field" => "fullPath", "optional" => false], ["type" => "bool", "field" => "delete", "optional" => true]],
-        "fileNoError" => [["type" => "integer", "field" => "size", "template" => true, "optional" => ""]],
-        "fileSize" => [["type" => "integer", "field" => "minSize", "template" => true], ["type" => "integer", "field" => "maxSize", "template" => true, "optional" => "null"]],
-        "fileUploaded" => [],
-        "filterValidator" => [["type" => "integer", "field" => "filter", "template" => true], ["type" => "integer", "field" => "options", "optional" => "null"]],
-        "floatType" => [],
-        "floatVal" => [],
-        "in" => [["type" => "array", "field" => "list"], ["type" => "bool", "field" => "strict", "optional" => false]],
-        "intType" => [],
-        "intVal" => [],
-        "length" => [["type" => "integer", "field" => "min", "template" => true], ["type" => "integer", "field" => "max", "template" => true], ["type" => "bool", "field" => "inclusive", "optional" => true]],
-        "noneOf" => [["type" => "Processor\\DataProcessor", "field" => "processors", "varying" => true]],
-        "noWhitespaces" => [["type" => "string", "field" => "extraCharacters", "template" => true, "optional" => ""]],
-        "numeric" => [],
-        "oneOf" => [["type" => "Processor\\DataProcessor", "field" => "processors", "varying" => true]],
-        "optional" => [["type" => "Processor\\DataProcessor", "field" => "processor"]],
-        "phone" => [],
-        "removeHtmlTags" => [["type" => "\\HTMLPurifier_Config", "field" => "config", "optional" => "null"]],
-        "setTypeBool" => [],
-        "setTypeFloat" => [],
-        "setTypeInt" => [],
-        "setTypeString" => [],
-        "stringType" => [],
-        "unicodeAlnum" => [["type" => "string", "field" => "extraCharacters", "template" => true, "optional" => ""]],
-    ];
-
-    private static $expectedValue = [
-        //TODO standard type
-        "allOf" => ["mixed"],
-        "alnum" => ["string"],
-        "arrayVal" => ["mixed"],
-        "between" => ["integer", "float"],
-        "boolType" => ['mixed'],
-        "boolVal" => ['mixed'],
-        "date" => ['mixed'],
-        "dateFormat" => ['DateTimeInterface'],
-        "digit" => ["string"],
-        "each" => ["array"],
-        "escapeHtmlTags" => ["string"],
-        "fileMimeType" => ["array", "string", "\\SplFileInfo"],
-        "fileMoveUpload" => ["array", "string", "\\SplFileInfo"],
-        "fileNoError" => ["array"],
-        "fileSize" => ["array", "string", "\\SplFileInfo"],
-        "fileUploaded" => ["array", "string", "\\SplFileInfo"],
-        "filterValidator" => ['mixed'],
-        "floatType" => ["mixed"],
-        "floatVal" => ['mixed'],
-        "in" => ["mixed"],
-        "intType" => ["mixed"],
-        "intVal" => ['mixed'],
-        "length" => ["string", "array"],
-        "noneOf" => ["mixed"],
-        "noWhitespaces" => ["string"],
-        "numeric" => ["mixed"],
-        "oneOf" => ["mixed"],
-        "optional" => ["mixed"],
-        "phone" => ["string"],
-        "removeHtmlTags" => ["string"],
-        "setTypeBool" => ['integer', 'bool', 'float', 'string'],
-        "setTypeFloat" => ['integer', 'bool', 'float', 'string'],
-        "setTypeInt" => ['integer', 'bool', 'float', 'string'],
-        "setTypeString" => ['integer', 'bool', 'float', 'string'],
-        "stringType" => ['mixed'],
-        "unicodeAlnum" => ["string"],
-    ];
-
     private static $messages = [
         "allOf" => "All of the following criteria must met:",
         //TODO extra
@@ -133,16 +53,6 @@ class RuleSettings
         //TODO extra
         "unicodeAlnum" => "{{name}} contain not only unicode alfanumeric characters",
     ];
-
-    public static function getArgumentsSetting($ruleName)
-    {
-        return self::$expectedArguments[$ruleName];
-    }
-
-    public static function getValueSetting($ruleName)
-    {
-        return self::$expectedValue[$ruleName];
-    }
 
     public static function getErrorSetting($ruleName)
     {

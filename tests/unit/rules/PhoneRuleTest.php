@@ -11,6 +11,7 @@ namespace Tests\Unit\Rules;
 
 use Processor\Exceptions\RuleException;
 use Processor\Rules\Abstraction\AbstractRule;
+use Processor\Rules\Abstraction\Errors;
 use Processor\Rules\Abstraction\RuleSettings;
 use Processor\Rules\PhoneRule;
 
@@ -22,26 +23,25 @@ class PhoneRuleTest extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         $this->rule = new PhoneRule();
-        $this->rule->setRuleName('phone');
     }
 
     public function testPhoneTrue()
     {
-        $return = $this->rule->verify("+36-30-599-7898");
+        $return = $this->rule->process("+36-30-599-7898");
 
         $this->assertEquals(true, $return);
     }
 
     public function testPhoneFalse()
     {
-        $return = $this->rule->verify("12-aáéű@:.;,?!%");
+        $return = $this->rule->process("12-aáéű@:.;,?!%");
 
         $this->assertEquals(false, $return);
     }
 
     public function testPhoneTrueWithError()
     {
-        $return = $this->rule->verify("+36305997898", true);
+        $return = $this->rule->process("+36305997898", Errors::ALL);
 
         $this->assertEquals(true, $return);
 
@@ -50,7 +50,7 @@ class PhoneRuleTest extends \PHPUnit_Framework_TestCase
     public function testPhoneFalseWithError()
     {
         try {
-            $this->rule->verify("123-aáéű webcam1", true);
+            $return = $this->rule->process("123-aáéű webcam1", Errors::ALL);
         } catch (RuleException $e) {
             $return = false;
             $this->assertEquals(1, sizeof($e->getErrorMessage()));

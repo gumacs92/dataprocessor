@@ -11,6 +11,7 @@ namespace Tests\Unit\Rules\Validators;
 
 use Processor\DataProcessor;
 use Processor\Exceptions\FailedProcessingException;
+use Processor\Rules\Abstraction\Errors;
 use Processor\Rules\Abstraction\RuleSettings;
 
 class AlnumRuleTest extends \PHPUnit_Framework_TestCase
@@ -34,7 +35,7 @@ class AlnumRuleTest extends \PHPUnit_Framework_TestCase
     }
 
     public function testAlnumTrueWithError(){
-        $return = DataProcessor::init()->alnum()->verify("123", true);
+        $return = DataProcessor::init()->alnum()->verify("123", Errors::ALL);
 
         $this->assertEquals(true, $return);
 
@@ -42,11 +43,11 @@ class AlnumRuleTest extends \PHPUnit_Framework_TestCase
 
     public function testAlnumFalseWithError(){
         try{
-            DataProcessor::init()->alnum()->verify("123-a", true);
+            DataProcessor::init()->alnum()->verify("123-a", Errors::ALL);
         } catch(FailedProcessingException $e) {
             $return = false;
-            $this->assertEquals(1, sizeof($e->getAllErrors()));
-            $this->assertEquals(RuleSettings::getErrorSetting("alnum"), $e->getAllErrors()[0]);
+            $this->assertEquals(1, sizeof($e->getErrors()));
+            $this->assertEquals(RuleSettings::getErrorSetting("alnum"), $e->getErrors()['alnum']);
         }finally{
             $this->assertEquals(false, $return);
         }

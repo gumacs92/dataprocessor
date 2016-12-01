@@ -2,7 +2,8 @@
 namespace Processor\Rules\Abstraction;
 
 use Processor\Exceptions\InvalidArgumentException;
-use Processor\Exceptions\RuleException;
+use ReflectionClass;
+use ReflectionProperty;
 
 /**
  * Created by PhpStorm.
@@ -12,8 +13,9 @@ use Processor\Exceptions\RuleException;
  */
 abstract class AbstractRule implements IValidatable
 {
-    protected static $data;
-    protected $nameForErrors;
+    protected $data;
+    protected $feedback;
+    protected $name;
     protected $error = "";
     protected $returnErrors = [];
     protected $ruleName;
@@ -23,151 +25,101 @@ abstract class AbstractRule implements IValidatable
 
     public function __construct()
     {
-
+        $namespace = explode("\\", get_class($this));
+        $classname = $namespace[sizeof($namespace) - 1];
+        $this->ruleName = lcfirst(substr($classname, 0, -4));
     }
 
-    public function rule()
-    {
-        $this->checkValue();
+    abstract public function rule();
 
-        return true;
-    }
-
-    public function verify($value, $errors = false)
+    public final function process($data, $feedback = Errors::NONE)
     {
-        self::$data = $value;
-        if (!$errors) {
-            return $this->process();
-        } else {
-            return $this->processWithErrors();
-        }
-    }
-
-    public function process()
-    {
-        return $this->rule();
-    }
-
-    public function processWithErrors()
-    {
+        $this->data = $data;
+        $this->feedback = $feedback;
         if (!$this->rule()) {
-            $this->returnErrors[$this->ruleName] = $this->getActualErrorMessage();
-            throw new RuleException($this->returnErrors[$this->ruleName]);
+            if (empty($this->returnErrors)) {
+                $this->returnErrors[$this->ruleName] = $this->getMockedErrorMessage();
+            }
+            return false;
         }
-
         return true;
     }
 
-    final private function typeCheck($value, $type)
+
+    protected final function addDataProcessorErrors($errors)
+    {
+        if (!key_exists($this->ruleName, $this->returnErrors)) {
+            $this->returnErrors[$this->ruleName][$this->ruleName] = $this->getMockedErrorMessage();
+        }
+
+        if ($this->feedback === Errors::ONE) {
+            $this->returnErrors[$this->ruleName][key($errors)] = current($errors);
+        } elseif ($this->feedback === Errors::ALL) {
+            $i = 0;
+            $key = $this->ruleName . $i;
+            while (key_exists($key, $this->returnErrors[$this->ruleName])) {
+                $i++;
+                $key = $this->ruleName . $i;
+            }
+
+            foreach ($errors as $k => $v) {
+                $this->returnErrors[$this->ruleName][$key][$k] = $v;
+            }
+
+        }
+    }
+
+    final private function validateType($value, $type)
     {
         $typeof = "is_" . $type;
-        if (function_exists($typeof)) {
+        if (function_exists($typeof) && !is_null($value)) {
             if (!$typeof($value)) {
-                $this->returnErrors['invalid_argument_type_error'] = 'Fatal error: ' . $type . ' expected for rule ' . get_class($this) .
-                    ", got " . gettype($value) . " instead";
-                throw new InvalidArgumentException($this->returnErrors['invalid_argument_type_error']);
+                return false;
             }
         } else {
-            if (!($value instanceof $type)) {
-                $this->returnErrors['invalid_argument_type_error'] = 'Fatal error: ' . $type . ' expected for rule ' . get_class($this) .
-                    ", got " . gettype($value) . " instead";
-                throw new InvalidArgumentException($this->returnErrors['invalid_argument_type_error']);
+            if (!($value instanceof $type) && !is_null($value)) {
+                return false;
             }
         }
+        return true;
     }
 
-    final public function checkArguments($arguments)
+    final public function typeCheck($value, $type)
     {
-        $argsettings = RuleSettings::getArgumentsSetting($this->ruleName);
-
-        $size_normal = 0;
-        $size_optional = 0;
-        $varying_size = false;
-
-        foreach ($argsettings as $setting) {
-            if (isset($setting["optional"])) {
-                $size_optional++;
-            } elseif (isset($setting['varying'])) {
-                $varying_size = true;
-                break;
-            } else {
-                $size_normal++;
-            }
-        }
-
-        $size_sum = $size_normal + $size_optional;
-        if (($size_normal > sizeof($arguments)) || (!$varying_size && ($size_normal !== sizeof($arguments) && $size_sum !== sizeof($arguments)))) {
-            $this->returnErrors['argument_size_error'] = 'Fatal error: expected ' . $size_normal . ' or ' . $size_sum . ' arguments for rule ' . get_class($this) .
-                ' but got ' . sizeof($arguments);
-            throw new InvalidArgumentException($this->returnErrors['argument_size_error']);
-        }
-
-        $i = 0;
-        while ($i < $size_sum) {
-//            foreach ($argsettings[$i]['type'] as $type)
-            if (!isset($arguments[$i]) && isset($argsettings[$i]['optional'])) {
-                $this->$argsettings[$i]['field'] = $argsettings[$i]['optional'] === "null" ? null : $argsettings[$i]['optional'];
-                if (isset($argsettings[$i]['template'])) {
-                    $this->template[$argsettings[$i]['field']] = $this->$argsettings[$i]['field'];
-                }
-            } elseif (isset($arguments[$i]) && !isset($argsettings[$i]['varying'])) {
-                $this->typeCheck($arguments[$i], $argsettings[$i]['type']);
-                $this->$argsettings[$i]['field'] = $arguments[$i];
-                if (isset($argsettings[$i]['template'])) {
-                    $this->template[$argsettings[$i]['field']] = $arguments[$i];
-                }
-            } else {
-                break;
-            }
-            $i++;
-        }
-        if ($varying_size) {
-            for ($j = $i; $j < sizeof($arguments); $j++) {
-                $this->typeCheck($arguments[$j], $argsettings[$i]['type']);
-                array_push($this->$argsettings[$i]['field'], $arguments[$j]);
-            }
-        }
-    }
-
-    final private function checkValue()
-    {
-        $valsetting = RuleSettings::getValueSetting($this->ruleName);
-
-        $errors = [];
         $success = false;
-        if ($valsetting[0] === "mixed") {
-            return self::$data;
-        } else {
-            //TODO standard type
-            foreach ($valsetting as $type) {
-                $typeof = "is_" . $type;
-                if (function_exists($typeof)) {
-                    if (!$typeof(self::$data)) {
-                        $errors[] = $type;
-                    } else {
-                        $success = true;
-                        break;
-                    }
-                } elseif (!self::$data instanceof $type) {
-                    $errors[] = $type;
-                } else {
+        if (is_array($type)) {
+            foreach ($type as $t) {
+                if ($this->validateType($value, $t)) {
                     $success = true;
                     break;
                 }
             }
+        } else {
+            if ($this->validateType($value, $type)) {
+                $success = true;
+            }
         }
         if (!$success) {
-            $this->returnErrors['invalid_value_type_error'] = 'Fatal error: expected ' . implode(" or ", $errors) . ' type for the processed value but got ' . gettype(self::$data) .
-                ' in the rule ' . get_class($this);
-            throw new InvalidArgumentException($this->returnErrors['invalid_value_type_error']);
+            throw new InvalidArgumentException('Fatal error: ' . $type . ' expected for rule ' . get_class($this) .
+                ", got " . gettype($value) . " instead");
         }
+
+        return $value;
     }
 
     final private function replaceTags($message)
     {
+        //TODO a little rework needed to only replace wanted tags;
         $msg = $message;
-        foreach ($this->template as $tag => $value) {
-            if (!empty($value) && ($value !== 0 || $value !== '')) {
+        $reflectionClass = new ReflectionClass($this);
+        $properties = $reflectionClass->getProperties(ReflectionProperty::IS_PROTECTED);
+        foreach ($properties as $prop) {
+            $tag = $prop->getName();
+            $prop->setAccessible(true);
+            $value = $prop->getValue($this);
+//        }
+//        foreach ($this->template as $tag => $value) {
+            if (!empty($value) && ($value !== 0 && $value !== '' && !is_object($value) && !is_array($value))) {
                 $search = "/({{)($tag)(}})/";
                 $replace = $value;
                 $msg = preg_replace($search, $replace, $msg);
@@ -177,7 +129,7 @@ abstract class AbstractRule implements IValidatable
         return $msg;
     }
 
-    final public function getActualErrorMessage()
+    final public function getMockedErrorMessage()
     {
         $error = RuleSettings::getErrorSetting($this->ruleName);
         if (is_array($error)) {
@@ -191,25 +143,9 @@ abstract class AbstractRule implements IValidatable
     /**
      * @return mixed
      */
-    final public function getRuleName()
+    final public function getName()
     {
-        return $this->ruleName;
-    }
-
-    /**
-     * @param mixed $ruleName
-     */
-    final public function setRuleName($ruleName)
-    {
-        $this->ruleName = $ruleName;
-    }
-
-    /**
-     * @return mixed
-     */
-    final public function getNameForErrors()
-    {
-        return $this->nameForErrors;
+        return $this->name;
     }
 
     /**
@@ -217,17 +153,17 @@ abstract class AbstractRule implements IValidatable
      * @return $this
      * @throws InvalidArgumentException
      */
-    final public function setNameForErrors($name)
+    final public function setName($name)
     {
         if (!is_string($name) && !is_null($name)) {
             $this->returnErrors['invalid_type_error'] = 'Fatal error: string expected for setName, got ' . gettype($name) . " instead";
             throw new InvalidArgumentException($this->returnErrors['invalid_type_error']);
         }
         if ($name === null) {
-            $this->nameForErrors = null;
+            $this->name = null;
             $this->template['name'] = '';
         } else {
-            $this->nameForErrors = $name;
+            $this->name = $name;
             $this->template['name'] = $name;
         }
         return $this;
@@ -235,17 +171,17 @@ abstract class AbstractRule implements IValidatable
     }
 
 
-    final public static function setData($data)
+    final public function setData($data)
     {
-        self::$data = $data;
+        $this->data = $data;
     }
 
     /**
      * @return mixed
      */
-    final public static function getData()
+    final public function getData()
     {
-        return self::$data;
+        return $this->data;
     }
 
     /**

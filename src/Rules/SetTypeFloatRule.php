@@ -14,7 +14,6 @@ class SetTypeFloatRule extends AbstractRule
 {
     public function rule()
     {
-        parent::rule();
-        return settype(self::$data, 'float');
+        return settype($this->data, 'float');
     }
 }

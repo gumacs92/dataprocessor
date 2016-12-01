@@ -14,7 +14,6 @@ class SetTypeIntRule extends AbstractRule
 {
     public function rule()
     {
-        parent::rule();
-        return settype(self::$data, 'integer');
+        return settype($this->data, 'integer');
     }
 }

@@ -11,6 +11,7 @@ namespace Tests\Unit\Rules;
 
 use Processor\Exceptions\RuleException;
 use Processor\Rules\Abstraction\AbstractRule;
+use Processor\Rules\Abstraction\Errors;
 use Processor\Rules\Abstraction\RuleSettings;
 use Processor\Rules\UnicodeAlnumRule;
 
@@ -21,35 +22,33 @@ class UnicodeAlnumRuleTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $this->rule = new UnicodeAlnumRule();
-        $this->rule->setRuleName('unicodeAlnum');
-        $this->rule->checkArguments(['-']);
+        $this->rule = new UnicodeAlnumRule('-');
     }
 
     public function testUnicodeAlnumTrueExtraCharacters()
     {
-        $return = $this->rule->verify("éű");
+        $return = $this->rule->process("éű");
 
         $this->assertEquals(true, $return);
     }
 
     public function testUnicodeAlnumTrue()
     {
-        $return = $this->rule->verify("áű1");
+        $return = $this->rule->process("áű1");
 
         $this->assertEquals(true, $return);
     }
 
     public function testUnicodeAlnumFalse()
     {
-        $return = $this->rule->verify("12-aáéű@:.;,?!%");
+        $return = $this->rule->process("12-aáéű@:.;,?!%");
 
         $this->assertEquals(false, $return);
     }
 
     public function testUnicodeAlnumTrueWithError()
     {
-        $return = $this->rule->verify("áéű", true);
+        $return = $this->rule->process("áéű", Errors::ALL);
 
         $this->assertEquals(true, $return);
 
@@ -58,7 +57,7 @@ class UnicodeAlnumRuleTest extends \PHPUnit_Framework_TestCase
     public function testUnicodeAlnumFalseWithError()
     {
         try {
-            $this->rule->verify("123-aáéű webcam1", true);
+            $return = $this->rule->process("123-aáéű webcam1", Errors::ALL);
         } catch (RuleException $e) {
             $return = false;
             $this->assertEquals(1, sizeof($e->getErrorMessage()));

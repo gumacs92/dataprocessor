@@ -11,6 +11,7 @@ namespace Tests\Unit\Rules\Validators;
 
 use Processor\DataProcessor;
 use Processor\Exceptions\FailedProcessingException;
+use Processor\Rules\Abstraction\Errors;
 use Processor\Rules\Abstraction\RuleSettings;
 
 class InRuleTest extends \PHPUnit_Framework_TestCase
@@ -29,17 +30,17 @@ class InRuleTest extends \PHPUnit_Framework_TestCase
 
     public function testInTrueWithErrors(){
 
-        $return = DataProcessor::init()->in([10, 11, 12])->verify(10, true);
+        $return = DataProcessor::init()->in([10, 11, 12])->verify(10, Errors::ALL);
 
         $this->assertEquals(true, $return);
     }
 
     public function testInFalseWithErrors(){
         try {
-            $return = DataProcessor::init()->in([10, 11, 12])->verify(13, true);
+            $return = DataProcessor::init()->in([10, 11, 12])->verify(13, Errors::ALL);
         } catch (FailedProcessingException $e) {
 
-            $this->assertEquals(1, sizeof($e->getAllErrors()));
-            $this->assertEquals(RuleSettings::getErrorSetting('in'), $e->getOneError());}
+            $this->assertEquals(1, sizeof($e->getErrors()));
+            $this->assertEquals(RuleSettings::getErrorSetting('in'), $e->getErrors()['in']);}
     }
 }

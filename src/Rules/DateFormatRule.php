@@ -15,11 +15,16 @@ class DateFormatRule extends AbstractRule
 {
     protected $format;
 
+    public function __construct($format)
+    {
+        parent::__construct();
+
+        $this->format = $this->typeCheck($format, "string");
+    }
+
     public function rule()
     {
-        parent::rule();
-
-        if((self::$data = date_format(self::$data, $this->format)) !== false){
+        if(($this->data = date_format($this->data, $this->format)) !== false){
             return true;
         } else {
             return false;

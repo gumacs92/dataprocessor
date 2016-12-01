@@ -13,7 +13,5 @@ interface IValidatable
 {
     public function rule();
 
-    public function process();
-
-    public function processWithErrors();
+    public function process($data, $feedback);
 }

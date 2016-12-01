@@ -11,6 +11,7 @@ namespace Tests\Unit\Rules\Validators;
 
 
 use Processor\Exceptions\RuleException;
+use Processor\Rules\Abstraction\Errors;
 use Processor\Rules\Abstraction\RuleSettings;
 use Processor\Rules\FileNoErrorRule;
 
@@ -22,7 +23,6 @@ class FileNoErrorRuleTest extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         $this->rule = new FileNoErrorRule();
-        $this->rule->setRuleName("fileNoError");
 
         $_FILES = array(
             'test' => array(
@@ -36,20 +36,20 @@ class FileNoErrorRuleTest extends \PHPUnit_Framework_TestCase
     }
 
     public function testFileNoErrorTrue(){
-        $return = $this->rule->verify($_FILES['test']);
+        $return = $this->rule->process($_FILES['test']);
 
         $this->assertEquals(true, $return);
     }
 
     public function testFileNoErrorFalse(){
         $_FILES['test']['error'] = 2;
-        $return = $this->rule->verify($_FILES['test']);
+        $return = $this->rule->process($_FILES['test']);
 
         $this->assertEquals(false, $return);
     }
 
     public function testFileNoErrorTrueWithErrors(){
-        $return = $this->rule->verify($_FILES['test'], true);
+        $return = $this->rule->process($_FILES['test'], Errors::ALL);
 
         $this->assertEquals(true, $return);
     }
@@ -57,7 +57,7 @@ class FileNoErrorRuleTest extends \PHPUnit_Framework_TestCase
     public function testFileNoErrorFalseWithErrors(){
         $_FILES['test']['error'] = 2;
         try{
-            $this->rule->verify($_FILES['test'], true);
+            $return = $this->rule->process($_FILES['test'], Errors::ALL);
         } catch (RuleException $e){
             $return = false;
             $this->assertEquals(RuleSettings::getErrorSetting('fileNoError')['exceeded_form_limit'], $e->getErrorMessage());

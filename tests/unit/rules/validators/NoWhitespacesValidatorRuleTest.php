@@ -11,6 +11,7 @@ namespace Tests\Unit\Rules\Validators;
 
 use Processor\DataProcessor;
 use Processor\Exceptions\FailedProcessingException;
+use Processor\Rules\Abstraction\Errors;
 use Processor\Rules\Abstraction\RuleSettings;
 
 class NoWhitespacesRuleTest extends \PHPUnit_Framework_TestCase
@@ -34,7 +35,7 @@ class NoWhitespacesRuleTest extends \PHPUnit_Framework_TestCase
     }
 
     public function testNoWhitespacesTrueWithError(){
-        $return = DataProcessor::init()->noWhitespaces()->verify("123", true);
+        $return = DataProcessor::init()->noWhitespaces()->verify("123", Errors::ALL);
 
         $this->assertEquals(true, $return);
 
@@ -42,11 +43,11 @@ class NoWhitespacesRuleTest extends \PHPUnit_Framework_TestCase
 
     public function testNoWhitespacesFalseWithError(){
         try{
-            DataProcessor::init()->noWhitespaces()->verify("12a ", true);
+            DataProcessor::init()->noWhitespaces()->verify("12a ", Errors::ALL);
         } catch(FailedProcessingException $e) {
             $return = false;
-            $this->assertEquals(1, sizeof($e->getAllErrors()));
-            $this->assertEquals(RuleSettings::getErrorSetting("noWhitespaces"), $e->getAllErrors()[0]);
+            $this->assertEquals(1, sizeof($e->getErrors()));
+            $this->assertEquals(RuleSettings::getErrorSetting("noWhitespaces"), $e->getErrors()["noWhitespaces"]);
         }finally{
             $this->assertEquals(false, $return);
         }

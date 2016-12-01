@@ -9,6 +9,7 @@
 namespace Tests\Unit\Rules;
 
 use Processor\Exceptions\RuleException;
+use Processor\Rules\Abstraction\Errors;
 use Processor\Rules\Abstraction\RuleSettings;
 use Processor\Rules\FileMoveUploadRule;
 use Tests\Helpers\Tools;
@@ -20,9 +21,7 @@ class FileMoveUploadRuleTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $this->rule = new FileMoveUploadRule();
-        $this->rule->setRuleName("fileMoveUpload");
-        $this->rule->checkArguments(['asd', 'd:\Development\testdata\testto\\']);
+        $this->rule = new FileMoveUploadRule('asd', 'd:\Development\testdata\testto\\');
 
         $_FILES = array(
             'test' => array(
@@ -36,20 +35,20 @@ class FileMoveUploadRuleTest extends \PHPUnit_Framework_TestCase
     }
 
     public function testFileMoveUploadTrue(){
-        $return = $this->rule->verify($_FILES['test']);
+        $return = $this->rule->process($_FILES['test']);
 
         $this->assertEquals(true, $return);
     }
 
     public function testFileMoveUploadFalse(){
         $_FILES['test']['tmp_name'] =  '';
-        $return = $this->rule->verify($_FILES['test']);
+        $return = $this->rule->process($_FILES['test']);
 
         $this->assertEquals(false, $return);
     }
 
     public function testFileMoveUploadTrueWithErrors(){
-        $return = $this->rule->verify($_FILES['test'], true);
+        $return = $this->rule->process($_FILES['test'], Errors::ALL);
 
         $this->assertEquals(true, $return);
     }
@@ -57,7 +56,7 @@ class FileMoveUploadRuleTest extends \PHPUnit_Framework_TestCase
     public function testFileMoveUploadFalseWithErrors(){
         $_FILES['test']['tmp_name'] =  '';
         try{
-            $this->rule->verify($_FILES['test'], true);
+            $return = $this->rule->process($_FILES['test'], Errors::ALL);
         } catch (RuleException $e){
             $return = false;
             $this->assertEquals(Tools::searchAndReplace(RuleSettings::getErrorSetting('fileMoveUpload'), ["minSize" => 100000, "maxSize" => 200000]), $e->getErrorMessage());

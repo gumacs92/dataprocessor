@@ -51,8 +51,8 @@ class OptionalRuleTest extends \PHPUnit_Framework_TestCase
         } catch (FailedProcessingException $e) {
 
             $return = false;
-            $this->assertEquals(1, sizeof($e->getAllErrors()));
-            $this->assertEquals(RuleSettings::getErrorSetting("numeric"), $e->getAllErrors()[0]);
+            $this->assertEquals(1, sizeof($e->getErrors()['optional']));
+            $this->assertEquals(RuleSettings::getErrorSetting("numeric"), $e->getAllErrors()['optional'][['optional0']['nuemric']]);
         } finally {
             $this->assertEquals(false, $result);
         }

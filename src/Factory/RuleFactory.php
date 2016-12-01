@@ -12,41 +12,20 @@ use Processor\Rules\Abstraction\AbstractRule;
  */
 class RuleFactory
 {
-    private $errors = [];
-
-    /**
-     * @return array
-     */
-    public function getErrors()
-    {
-        return $this->errors;
-    }
-
-
     /**
      * @param $rulename
      * @return AbstractRule
      */
-    public function get($rulename){
-        $rulepath = "Processor\\Rules\\" . ucfirst($rulename) . 'Rule';
-        return $this->prepareRule($rulename, $rulepath);
-    }
+    public function get($rulename, $arguments){
+        $rulefullname = "Processor\\Rules\\" . ucfirst($rulename) . 'Rule';
 
-    /**
-     * @param $rulename
-     * @param $rulepath
-     * @return AbstractRule
-     * @throws InvalidRuleException
-     */
-    public function prepareRule($rulename, $rulepath){
-        if(class_exists($rulepath)){
+        if(class_exists($rulefullname)){
             /* @var AbstractRule $rulentity */
-            $rulentity = new $rulepath();
-            $rulentity->setRuleName($rulename);
+            $rulentity = new $rulefullname(...$arguments);
             return $rulentity;
         }
 
-        $this->errors['invalid_rule_error'] = "Fatal error: Call to undefined rule: $rulepath";
-        throw new InvalidRuleException($this->errors['invalid_rule_error']);
+        throw new InvalidRuleException("Fatal error: Call to undefined rule: $rulefullname");
     }
+
 }

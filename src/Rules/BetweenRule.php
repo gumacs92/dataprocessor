@@ -16,9 +16,18 @@ class BetweenRule extends AbstractRule
     protected $max;
     protected $inclusive;
 
+    public function __construct($min, $max, $inclusive = true)
+    {
+        parent::__construct();
+
+        $this->min = $this->typeCheck($min, 'numeric');
+        $this->max = $this->typeCheck($max, 'numeric');
+        $this->inclusive = $this->typeCheck($inclusive, 'bool');
+    }
+
     public function rule()
     {
-        parent::rule();
+
         if(!$this->inclusive){
             $min = $this->min+1;
             $max = $this->max-1;
@@ -26,7 +35,7 @@ class BetweenRule extends AbstractRule
             $min = $this->min;
             $max = $this->max;
         }
-        if (self::$data < $min or self::$data > $max) {
+        if ($this->data < $min or $this->data > $max) {
             return false;
         }
         return true;

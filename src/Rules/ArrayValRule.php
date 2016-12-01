@@ -14,9 +14,7 @@ class ArrayValRule extends AbstractRule
 {
     public function rule()
     {
-        parent::rule();
-
-        return is_array(self::$data);
+        return is_array($this->data);
     }
 
 }

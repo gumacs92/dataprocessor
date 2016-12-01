@@ -14,7 +14,6 @@ class SetTypeStringRule extends AbstractRule
 {
     public function rule()
     {
-        parent::rule();
-        return settype(self::$data, 'string');
+        return settype($this->data, 'string');
     }
 }

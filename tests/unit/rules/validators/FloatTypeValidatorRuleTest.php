@@ -11,6 +11,7 @@ namespace Tests\Unit\Rules\Validators;
 
 use Processor\DataProcessor;
 use Processor\Exceptions\FailedProcessingException;
+use Processor\Rules\Abstraction\Errors;
 use Processor\Rules\Abstraction\RuleSettings;
 
 class FloatTypeRuleTest extends \PHPUnit_Framework_TestCase
@@ -31,7 +32,7 @@ class FloatTypeRuleTest extends \PHPUnit_Framework_TestCase
 
     public function testFloatTypeTrueWithError()
     {
-        $return = DataProcessor::init()->floatType()->verify(10.1, true);
+        $return = DataProcessor::init()->floatType()->verify(10.1, Errors::ALL);
 
         $this->assertEquals(true, $return);
     }
@@ -39,11 +40,11 @@ class FloatTypeRuleTest extends \PHPUnit_Framework_TestCase
     public function testFloatTypeFalseWithError()
     {
         try {
-            DataProcessor::init()->floatType()->verify("123", true);
+            DataProcessor::init()->floatType()->verify("123", Errors::ALL);
         } catch (FailedProcessingException $e) {
             $return = false;
-            $this->assertEquals(1, sizeof($e->getAllErrors()));
-            $this->assertEquals(RuleSettings::getErrorSetting("floatType"), $e->getAllErrors()[0]);
+            $this->assertEquals(1, sizeof($e->getErrors()));
+            $this->assertEquals(RuleSettings::getErrorSetting("floatType"), $e->getErrors()["floatType"]);
         } finally {
             $this->assertEquals(false, $return);
         }

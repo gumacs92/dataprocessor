@@ -16,10 +16,17 @@ class FilterValidatorRule extends AbstractRule
     protected $filter;
     protected $options;
 
+    public function __construct($filter, $options = null)
+    {
+        parent::__construct();
+
+        $this->filter = $this->typeCheck($filter, 'integer');
+        $this->options = $this->typeCheck($options, 'integer');
+    }
+
     public function rule()
     {
-        parent::rule();
-        if ((self::$data = filter_var(self::$data, $this->filter, $this->options)) !== false) {
+        if (($this->data = filter_var($this->data, $this->filter, $this->options)) !== false) {
             return true;
         }
         return false;

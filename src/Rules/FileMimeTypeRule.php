@@ -14,18 +14,23 @@ class FileMimeTypeRule extends AbstractRule
 {
     protected $mimeType;
 
+    public function __construct($mimeType)
+    {
+        parent::__construct();
+
+        $this->mimeType = $this->typeCheck($mimeType, 'string');
+    }
+
     public function rule()
     {
-        parent::rule();
+        if (isset($this->data['tmp_name'])) {
 
-        if (isset(self::$data['tmp_name'])) {
+            $tmpfile = new \SplFileInfo($this->data['tmp_name']);
 
-            $tmpfile = new \SplFileInfo(self::$data['tmp_name']);
-
-        } elseif (is_string(self::$data)) {
-            $tmpfile = new \SplFileInfo(self::$data);
-        } elseif (self::$data instanceof \SplFileInfo) {
-            $tmpfile = self::$data;
+        } elseif (is_string($this->data)) {
+            $tmpfile = new \SplFileInfo($this->data);
+        } elseif ($this->data instanceof \SplFileInfo) {
+            $tmpfile = $this->data;
         } else {
             return false;
         }

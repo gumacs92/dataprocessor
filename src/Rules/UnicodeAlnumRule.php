@@ -14,12 +14,16 @@ class UnicodeAlnumRule extends AbstractRule
 {
     protected $extraCharacters;
 
+    public function __construct($extraCharacters = '')
+    {
+        parent::__construct();
+        $this->extraCharacters = $this->typeCheck($extraCharacters, "string");
+    }
+
     public function rule()
     {
-        parent::rule();
-
         $chars = '/(*UTF8)[^\p{L}\p{N}' . $this->extraCharacters . ']/';
-        if (preg_match($chars, self::$data)) {
+        if (preg_match($chars, $this->data)) {
             return false;
         }
         return true;

@@ -13,25 +13,15 @@ class FailedProcessingException extends \Exception
 {
     private $errors = [];
 
-    public function __construct($errors, $message="", $code=0, Exception $previous=null)
+    public function __construct($errors, $message = "", $code = 0, Exception $previous = null)
     {
         parent::__construct($message, $code, $previous);
         $this->errors = $errors;
     }
 
-    public function getOneError(){
-        if(!empty($this->errors)){
-            if(is_array($this->errors[0])){
-                return $this->errors[0][0];
-            } else{
-                return $this->errors[0];
-            }
-        }
-        return null;
-    }
-
-    public function getAllErrors(){
-        if(!empty($this->errors)){
+    public function getErrors()
+    {
+        if (!empty($this->errors)) {
             return $this->errors;
         }
         return null;

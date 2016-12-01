@@ -14,7 +14,6 @@ class NumericRule extends AbstractRule
 {
     public function rule()
     {
-        parent::rule();
-        return is_numeric(self::$data);
+        return is_numeric($this->data);
     }
 }

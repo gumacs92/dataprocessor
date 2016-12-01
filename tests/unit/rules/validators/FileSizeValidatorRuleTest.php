@@ -10,6 +10,7 @@ namespace Tests\Unit\Rules\Validators;
 
 
 use Processor\Exceptions\RuleException;
+use Processor\Rules\Abstraction\Errors;
 use Processor\Rules\Abstraction\RuleSettings;
 use Processor\Rules\FileSizeRule;
 use Tests\Helpers\Tools;
@@ -21,9 +22,7 @@ class FileSizeRuleTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $this->rule = new FileSizeRule();
-        $this->rule->setRuleName("fileSize");
-        $this->rule->checkArguments([100000, 200000]);
+        $this->rule = new FileSizeRule(100000, 200000);
 
         $_FILES = array(
             'test' => array(
@@ -37,20 +36,20 @@ class FileSizeRuleTest extends \PHPUnit_Framework_TestCase
     }
 
     public function testFileSizeTrue(){
-        $return = $this->rule->verify($_FILES['test']);
+        $return = $this->rule->process($_FILES['test']);
 
         $this->assertEquals(true, $return);
     }
 
     public function testFileSizeFalse(){
         $_FILES['test']['tmp_name'] =  'd:\Development\testdata\testfrom\test.php';
-        $return = $this->rule->verify($_FILES['test']);
+        $return = $this->rule->process($_FILES['test']);
 
         $this->assertEquals(false, $return);
     }
 
     public function testFileSizeTrueWithErrors(){
-        $return = $this->rule->verify($_FILES['test'], true);
+        $return = $this->rule->process($_FILES['test'], Errors::ALL);
 
         $this->assertEquals(true, $return);
     }
@@ -58,7 +57,7 @@ class FileSizeRuleTest extends \PHPUnit_Framework_TestCase
     public function testFileSizeFalseWithErrors(){
         $_FILES['test']['tmp_name'] =  'd:\Development\testdata\testfrom\test.php';
         try{
-            $this->rule->verify($_FILES['test'], true);
+            $return = $this->rule->process($_FILES['test'], Errors::ALL);
         } catch (RuleException $e){
             $return = false;
             $this->assertEquals(Tools::searchAndReplace(RuleSettings::getErrorSetting('fileSize'), ["minSize" => 100000, "maxSize" => 200000]), $e->getErrorMessage());

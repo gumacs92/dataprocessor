@@ -10,6 +10,7 @@ namespace Tests\Unit\Rules\Validators;
 
 use Processor\DataProcessor;
 use Processor\Exceptions\FailedProcessingException;
+use Processor\Rules\Abstraction\Errors;
 use Processor\Rules\Abstraction\RuleSettings;
 use Processor\Rules\NumericRule;
 
@@ -20,13 +21,12 @@ class NumericRuleTest extends \PHPUnit_Framework_TestCase
     public static function setUpBeforeClass()
     {
         self::$rule = new NumericRule();
-        self::$rule->setRuleName('numeric');
     }
 
     public function testValueIsNumberWithErrors()
     {
-        $return = DataProcessor::init()->numeric()->verify(10, true);
-        $return1 = DataProcessor::init()->numeric()->verify("10", true);
+        $return = DataProcessor::init()->numeric()->verify(10, Errors::ALL);
+        $return1 = DataProcessor::init()->numeric()->verify("10", Errors::ALL);
 
         $this->assertEquals(true, $return);
         $this->assertEquals(true, $return1);
@@ -35,9 +35,9 @@ class NumericRuleTest extends \PHPUnit_Framework_TestCase
     public function testValueIsNotNumberWithErrors()
     {
         try{
-            $return = DataProcessor::init()->numeric()->verify("s", true);
+            $return = DataProcessor::init()->numeric()->verify("s", Errors::ALL);
         }catch(FailedProcessingException $e){
-            $this->assertEquals(RuleSettings::getErrorSetting("numeric"), $e->getOneError());
+            $this->assertEquals(RuleSettings::getErrorSetting("numeric"), $e->getErrors()["numeric"]);
         }
     }
 

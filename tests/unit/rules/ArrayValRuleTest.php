@@ -11,6 +11,7 @@ namespace Tests\Unit\Rules;
 
 use Processor\Exceptions\RuleException;
 use Processor\Rules\Abstraction\AbstractRule;
+use Processor\Rules\Abstraction\Errors;
 use Processor\Rules\Abstraction\RuleSettings;
 use Processor\Rules\ArrayValRule;
 
@@ -22,26 +23,25 @@ class ArrayValRuleTest extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         $this->rule = new ArrayValRule();
-        $this->rule->setRuleName('arrayVal');
     }
 
     public function testArrayValTrue()
     {
-        $return = $this->rule->verify([]);
+        $return = $this->rule->process([]);
 
         $this->assertEquals(true, $return);
     }
 
     public function testArrayValFalse()
     {
-        $return = $this->rule->verify("asd");
+        $return = $this->rule->process("asd");
 
         $this->assertEquals(false, $return);
     }
 
     public function testArrayValTrueWithError()
     {
-        $return = $this->rule->verify([1, 2, 3], true);
+        $return = $this->rule->process([1, 2, 3], Errors::ALL);
 
         $this->assertEquals(true, $return);
     }
@@ -49,7 +49,7 @@ class ArrayValRuleTest extends \PHPUnit_Framework_TestCase
     public function testArrayValFalseWithError()
     {
         try {
-            $return = $this->rule->verify("asd", true);
+            $return = $this->rule->process("asd", Errors::ALL);
         } catch (RuleException $e) {
             $return = false;
             $this->assertEquals(1, sizeof($e->getErrorMessage()));

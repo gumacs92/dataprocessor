@@ -10,6 +10,7 @@ namespace Tests\Unit\Rules\Validators;
 
 
 use Processor\Exceptions\RuleException;
+use Processor\Rules\Abstraction\Errors;
 use Processor\Rules\Abstraction\RuleSettings;
 use Processor\Rules\BoolValRule;
 
@@ -21,26 +22,25 @@ class BoolValRuleTest extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         $this->rule = new BoolValRule();
-        $this->rule->setRuleName('boolVal');
     }
 
     public function testBoolValTrue()
     {
-        $return = $this->rule->verify("true");
+        $return = $this->rule->process("true");
 
         $this->assertEquals(true, $return);
     }
 
     public function testBoolValFalse()
     {
-        $return = $this->rule->verify("asd");
+        $return = $this->rule->process("asd");
 
         $this->assertEquals(false, $return);
     }
 
     public function testBoolValTrueWithError()
     {
-        $return = $this->rule->verify("no", false);
+        $return = $this->rule->process("no", false);
 
         $this->assertEquals(true, $return);
     }
@@ -48,7 +48,7 @@ class BoolValRuleTest extends \PHPUnit_Framework_TestCase
     public function testBoolValFalseWithError()
     {
         try {
-            $return = $this->rule->verify("asd", true);
+            $return = $this->rule->process("asd", Errors::ALL);
         } catch (RuleException $e) {
             $return = false;
             $this->assertEquals(1, sizeof($e->getErrorMessage()));

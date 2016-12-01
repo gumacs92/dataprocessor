@@ -14,9 +14,7 @@ class EscapeHtmlTagsRule extends AbstractRule
 {
     public function rule()
     {
-        parent::rule();
-
-        self::$data = htmlspecialchars(self::$data);
+        $this->data = htmlspecialchars($this->data);
 
         return true;
     }

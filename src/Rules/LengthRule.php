@@ -16,9 +16,17 @@ class LengthRule extends AbstractRule
     protected $max;
     protected $inclusive;
 
+    public function __construct($min, $max, $inclusive = true)
+    {
+        parent::__construct();
+
+        $this->min = $this->typeCheck($min, 'integer');
+        $this->max = $this->typeCheck($max, 'integer');
+        $this->inclusive = $this->typeCheck($inclusive, 'bool');
+    }
+
     public function rule()
     {
-        parent::rule();
         if(!$this->inclusive){
             $min = $this->min+1;
             $max = $this->max-1;
@@ -26,13 +34,13 @@ class LengthRule extends AbstractRule
             $min = $this->min;
             $max = $this->max;
         }
-        if (is_string(self::$data)) {
-            if (strlen(self::$data) < $min || strlen(self::$data) > $max) {
+        if (is_string($this->data)) {
+            if (strlen($this->data) < $min || strlen($this->data) > $max) {
                 return false;
             }
             return true;
-        } elseif (is_array(self::$data)) {
-            if (count(self::$data) < $min || count(self::$data) > $max) {
+        } elseif (is_array($this->data)) {
+            if (count($this->data) < $min || count($this->data) > $max) {
                 return false;
             }
             return true;

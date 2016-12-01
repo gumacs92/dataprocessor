@@ -4,7 +4,6 @@ namespace Processor\Rules;
 
 use Processor\DataProcessor;
 use Processor\Exceptions\FailedProcessingException;
-use Processor\Exceptions\RuleException;
 use Processor\Rules\Abstraction\AbstractRule;
 
 /**
@@ -18,37 +17,33 @@ class OptionalRule extends AbstractRule
     /* @var DataProcessor $processor */
     protected $processor;
 
+    public function __construct($processor)
+    {
+        parent::__construct();
+        $this->processor = $this->typeCheck($processor, DataProcessor::class);
+    }
+
     public function rule()
     {
-        parent::rule();
-        if (!isset(self::$data) || empty(self::$data)) {
+        if (!isset($this->data) || empty($this->data)) {
             return true;
         } else {
-            return false;
-        }
-    }
-
-    public function process()
-    {
-        if (!$this->rule()) {
-            $this->processor->setNameForErrors($this->nameForErrors);
-            return $this->processor->process();
-        } else {
-            return true;
-        }
-    }
-
-    public function processWithErrors()
-    {
-        if (!$this->rule()) {
             try {
-                $this->processor->setNameForErrors($this->nameForErrors);
-                $return = $this->processor->process();
+                $this->processor->setName($this->name);
+                $return = $this->processor->verify($this->data, $this->feedback);
+
+                if ($return)
+                    $this->data = $this->processor->getData();
+                else
+                    $this->addDataProcessorErrors($this->processor->getMockedErrors());
+
+
             } catch (FailedProcessingException $e) {
-                throw new RuleException($e->getAllErrors());
+                $this->addDataProcessorErrors($e->getErrors());
             }
-        } else {
-            return true;
+            if (empty($this->returnErrors))
+                return true;
+            return false;
         }
     }
 }

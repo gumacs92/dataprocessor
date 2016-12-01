@@ -16,53 +16,45 @@ class NoneOfRule extends AbstractRule
 {
     protected $processors = [];
 
-    public function process()
+    public function __construct(...$processors)
     {
-        $return = false;
-        $this->rule();
-
-        /* @var DataProcessor $proc */
-        foreach($this->processors as $proc){
-            $oldData = self::$data;
-            $proc->setNameForErrors($this->nameForErrors);
-            $return = $proc->process();
-
-            if($return){
-                break;
+        parent::__construct();
+        if (is_array($processors)) {
+            foreach ($processors as $proc) {
+                $this->typeCheck($proc, DataProcessor::class);
             }
-            self::$data = $oldData;
+            $this->processors = $processors;
+        } else {
+            $this->processors[] = $this->typeCheck($processors, DataProcessor::class);
         }
 
-        return !$return;
     }
 
-    public function processWithErrors()
+    public function rule()
     {
-        $success = false;
-        $this->rule();
-
+        $failed = false;
         $errors = [];
+
         /* @var DataProcessor $proc */
-        foreach($this->processors as $proc){
-            try{
-                $oldData = self::$data;
-                $proc->setNameForErrors($this->nameForErrors);
-                $proc->processWithErrors();
-                $success = true;
-                $errors[] = $proc->getMockedErrors();
-            } catch(FailedProcessingException $e){
-                self::$data = $oldData;
+        foreach ($this->processors as $proc) {
+            try {
+                $oldData = $this->data;
+                $proc->setName($this->name);
+                $return = $proc->verify($this->data, $this->feedback);
+
+                if ($return) {
+                    $failed = true;
+                    $this->data = $oldData;
+//                    $errors[] = $proc->getMockedErrors();
+                    $this->addDataProcessorErrors($proc->getMockedErrors());
+                }
+            } catch (FailedProcessingException $e) {
+                $this->addDataProcessorErrors($e->getErrors());
+                $this->data = $oldData;
             }
-        }
-        if($success){
-            $this->returnErrors[] = $this->getActualErrorMessage();
-            foreach ($errors as $error) {
-                $this->returnErrors[] = $error;
-            }
-            throw new FailedProcessingException($this->returnErrors);
         }
 
-        return true;
+        return $failed ? false : true;
     }
 
 }

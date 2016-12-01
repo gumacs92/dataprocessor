@@ -11,6 +11,7 @@ namespace Tests\Unit\Rules\Validators;
 
 use Processor\DataProcessor;
 use Processor\Exceptions\FailedProcessingException;
+use Processor\Rules\Abstraction\Errors;
 use Processor\Rules\Abstraction\RuleSettings;
 
 class StringTypeRuleTest extends \PHPUnit_Framework_TestCase
@@ -31,7 +32,7 @@ class StringTypeRuleTest extends \PHPUnit_Framework_TestCase
 
     public function testStringTypeTrueWithError()
     {
-        $return = DataProcessor::init()->stringType()->verify("123", true);
+        $return = DataProcessor::init()->stringType()->verify("123", Errors::ALL);
 
         $this->assertEquals(true, $return);
     }
@@ -39,11 +40,11 @@ class StringTypeRuleTest extends \PHPUnit_Framework_TestCase
     public function testStringTypeFalseWithError()
     {
         try {
-            DataProcessor::init()->stringType()->verify(10, true);
+            DataProcessor::init()->stringType()->verify(10, Errors::ALL);
         } catch (FailedProcessingException $e) {
             $return = false;
-            $this->assertEquals(1, sizeof($e->getAllErrors()));
-            $this->assertEquals(RuleSettings::getErrorSetting("stringType"), $e->getAllErrors()[0]);
+            $this->assertEquals(1, sizeof($e->getErrors()));
+            $this->assertEquals(RuleSettings::getErrorSetting("stringType"), $e->getErrors()["stringType"]);
         } finally {
             $this->assertEquals(false, $return);
         }

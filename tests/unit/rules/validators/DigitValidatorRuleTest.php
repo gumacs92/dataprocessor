@@ -11,6 +11,7 @@ namespace Tests\Unit\Rules\Validators;
 
 use Processor\DataProcessor;
 use Processor\Exceptions\FailedProcessingException;
+use Processor\Rules\Abstraction\Errors;
 use Processor\Rules\Abstraction\RuleSettings;
 
 class DigitRuleTest extends \PHPUnit_Framework_TestCase
@@ -34,7 +35,7 @@ class DigitRuleTest extends \PHPUnit_Framework_TestCase
     }
 
     public function testDigitTrueWithError(){
-        $return = DataProcessor::init()->digit()->verify("123", true);
+        $return = DataProcessor::init()->digit()->verify("123", Errors::ALL);
 
         $this->assertEquals(true, $return);
 
@@ -42,11 +43,11 @@ class DigitRuleTest extends \PHPUnit_Framework_TestCase
 
     public function testDigitFalseWithError(){
         try{
-            DataProcessor::init()->digit()->verify("12a", true);
+            DataProcessor::init()->digit()->verify("12a", Errors::ALL);
         } catch(FailedProcessingException $e) {
             $return = false;
-            $this->assertEquals(1, sizeof($e->getAllErrors()));
-            $this->assertEquals(RuleSettings::getErrorSetting("digit"), $e->getAllErrors()[0]);
+            $this->assertEquals(1, sizeof($e->getErrors()));
+            $this->assertEquals(RuleSettings::getErrorSetting("digit"), $e->getErrors()["digit"]);
         }finally{
             $this->assertEquals(false, $return);
         }

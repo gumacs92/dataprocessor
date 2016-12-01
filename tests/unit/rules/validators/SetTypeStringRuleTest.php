@@ -10,6 +10,7 @@ namespace Tests\Unit\Rules\Validators;
 
 
 use Processor\Exceptions\FailedProcessingException;
+use Processor\Rules\Abstraction\Errors;
 use Processor\Rules\Abstraction\RuleSettings;
 use Processor\Rules\SetTypeStringRule;
 
@@ -21,26 +22,25 @@ class SetTypeStringRuleTest extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         $this->rule = new SetTypeStringRule();
-        $this->rule->setRuleName('setTypeString');
     }
 
     public function testSetTypeStringTrueFromInt()
     {
-        $return = $this->rule->verify(10);
+        $return = $this->rule->process(10);
 
         $this->assertEquals(true, $return);
     }
 
     public function testSetTypeStringTrueFromFloat()
     {
-        $return = $this->rule->verify(10.1);
+        $return = $this->rule->process(10.1);
 
         $this->assertEquals(true, $return);
     }
 
     public function testSetTypeStringTrueFromIntWithError()
     {
-        $return = $this->rule->verify(10, true);
+        $return = $this->rule->process(10, Errors::ALL);
 
         $this->assertEquals(true, $return);
     }
@@ -48,7 +48,7 @@ class SetTypeStringRuleTest extends \PHPUnit_Framework_TestCase
     public function testSetTypeStringTrueFromBoolWithError()
     {
         try {
-            $return = $this->rule->verify(false, true);
+            $return = $this->rule->process(false, Errors::ALL);
         } catch (FailedProcessingException $e) {
             $return = false;
             $this->assertEquals(1, sizeof($e->getAllErrors()));

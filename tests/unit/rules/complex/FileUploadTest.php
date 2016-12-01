@@ -26,6 +26,7 @@ namespace Tests\Unit\Rules;
 
 use Processor\DataProcessor;
 use Processor\Exceptions\FailedProcessingException;
+use Processor\Rules\Abstraction\Errors;
 use Processor\Rules\Abstraction\RuleSettings;
 use Tests\Helpers\Tools;
 
@@ -76,11 +77,11 @@ class FileUploadTest extends \PHPUnit_Framework_TestCase
     {
         $_FILES['test']['error'] = 1;
         try {
-            DataProcessor::init()->fileNoError()->fileUploaded()->fileMimeType('image/jpeg')->fileSize(100000)->fileMoveUpload('asd', 'd:\Development\testdata\testfrom\\')->verify($_FILES['test'], true);
+            DataProcessor::init()->fileNoError()->fileUploaded()->fileMimeType('image/jpeg')->fileSize(100000)->fileMoveUpload('asd', 'd:\Development\testdata\testfrom\\')->verify($_FILES['test'], Errors::ALL);
         } catch (FailedProcessingException $e) {
             $return = false;
             $expected = RuleSettings::getErrorSetting("fileNoError")['exceeded_default_limit'];
-            $got = $e->getAllErrors()[0];
+            $got = $e->getErrors()["fileNoError"];
             $this->assertEquals($expected, $got);
         } finally {
 
@@ -92,11 +93,11 @@ class FileUploadTest extends \PHPUnit_Framework_TestCase
     {
         $_FILES['test']['tmp_name'] = "";
         try {
-            DataProcessor::init()->fileNoError()->fileUploaded()->fileMimeType('image/jpeg')->fileSize(100000)->fileMoveUpload('asd', 'd:\Development\testdata\testfrom\\')->verify($_FILES['test'], true);
+            DataProcessor::init()->fileNoError()->fileUploaded()->fileMimeType('image/jpeg')->fileSize(100000)->fileMoveUpload('asd', 'd:\Development\testdata\testfrom\\')->verify($_FILES['test'], Errors::ALL);
         } catch (FailedProcessingException $e) {
             $return = false;
             $expected = RuleSettings::getErrorSetting("fileUploaded");
-            $got = $e->getAllErrors()[0];
+            $got = $e->getErrors()["fileUploaded"];
             $this->assertEquals($expected, $got);
         } finally {
 
@@ -107,11 +108,11 @@ class FileUploadTest extends \PHPUnit_Framework_TestCase
     public function testUploadFailureAtMimeType()
     {
         try {
-            DataProcessor::init()->init()->fileNoError()->fileUploaded()->fileMimeType('image/png')->fileSize(100000)->fileMoveUpload('asd', 'd:\Development\testdata\testfrom\\')->verify($_FILES['test'], true);
+            DataProcessor::init()->init()->fileNoError()->fileUploaded()->fileMimeType('image/png')->fileSize(100000)->fileMoveUpload('asd', 'd:\Development\testdata\testfrom\\')->verify($_FILES['test'], Errors::ALL);
         } catch (FailedProcessingException $e) {
             $return = false;
             $expected = Tools::searchAndReplace(RuleSettings::getErrorSetting("fileMimeType"), ["mimeType" => "image/png"]);
-            $got = $e->getAllErrors()[0];
+            $got = $e->getErrors()["fileMimeType"];
             $this->assertEquals($expected, $got);
         } finally {
 
@@ -122,11 +123,11 @@ class FileUploadTest extends \PHPUnit_Framework_TestCase
     public function testUploadFailureAtFileSize()
     {
         try {
-            DataProcessor::init()->fileNoError()->fileUploaded()->fileMimeType('image/jpeg')->fileSize(300000)->fileMoveUpload('asd', 'd:\Development\testdata\testfrom\\')->verify($_FILES['test'], true);
+            DataProcessor::init()->fileNoError()->fileUploaded()->fileMimeType('image/jpeg')->fileSize(300000)->fileMoveUpload('asd', 'd:\Development\testdata\testfrom\\')->verify($_FILES['test'], Errors::ALL);
         } catch (FailedProcessingException $e) {
             $return = false;
             $expected = Tools::searchAndReplace(RuleSettings::getErrorSetting("fileSize"), ["minSize" => 300000]);
-            $got = $e->getAllErrors()[0];
+            $got = $e->getErrors()["fileSize"];
             $this->assertEquals($expected, $got);
         } finally {
 

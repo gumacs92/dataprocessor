@@ -15,8 +15,6 @@ class FloatValRule extends AbstractRule
 {
     public function rule()
     {
-        parent::rule();
-
-        return is_float(filter_var(self::$data, FILTER_VALIDATE_FLOAT));
+        return is_float(filter_var($this->data, FILTER_VALIDATE_FLOAT));
     }
 }

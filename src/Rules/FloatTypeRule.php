@@ -14,7 +14,6 @@ class FloatTypeRule extends AbstractRule
 {
     public function rule()
     {
-        parent::rule();
-        return is_float(self::$data);
+        return is_float($this->data);
     }
 }

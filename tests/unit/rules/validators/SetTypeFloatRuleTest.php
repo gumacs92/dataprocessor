@@ -10,6 +10,7 @@ namespace Tests\Unit\Rules\Validators;
 
 
 use Processor\Exceptions\FailedProcessingException;
+use Processor\Rules\Abstraction\Errors;
 use Processor\Rules\Abstraction\RuleSettings;
 use Processor\Rules\SetTypeFloatRule;
 
@@ -21,26 +22,25 @@ class SetTypeFloatRuleTest extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         $this->rule = new SetTypeFloatRule();
-        $this->rule->setRuleName('setTypeFloat');
     }
 
     public function testSetTypeFloatTrue()
     {
-        $return = $this->rule->verify(10);
+        $return = $this->rule->process(10);
 
         $this->assertEquals(true, $return);
     }
 
     public function testSetTypeFloatTrueFromInt()
     {
-        $return = $this->rule->verify(10);
+        $return = $this->rule->process(10);
 
         $this->assertEquals(true, $return);
     }
 
     public function testSetTypeFloatTrueWithError()
     {
-        $return = $this->rule->verify(10, true);
+        $return = $this->rule->process(10, Errors::ALL);
 
         $this->assertEquals(true, $return);
     }
@@ -48,7 +48,7 @@ class SetTypeFloatRuleTest extends \PHPUnit_Framework_TestCase
     public function testSetTypeFloatTrueFromStringsWithError()
     {
         try {
-            $return = $this->rule->verify("asd", true);
+            $return = $this->rule->process("asd", Errors::ALL);
         } catch (FailedProcessingException $e) {
             $return = false;
             $this->assertEquals(1, sizeof($e->getAllErrors()));

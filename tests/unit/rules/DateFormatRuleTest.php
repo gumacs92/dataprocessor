@@ -6,7 +6,7 @@
  * Time: 02:07 AM
  */
 
-namespace unit\rules;
+namespace Tests\Unit\Rules;
 
 
 use DateTime;
@@ -20,15 +20,12 @@ class DateFormatRuleTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $this->rule = new DateFormatRule();
-        $this->rule->setRuleName('dateFormat');
-
-        $this->rule->checkArguments(['Y-m-d H:i:s']);
+        $this->rule = new DateFormatRule('Y-m-d H:i:s');
     }
 
     public function testDateFormatTrue()
     {
-        $return = $this->rule->verify(new DateTime("11/28/2016 5:35 PM"));
+        $return = $this->rule->process(new DateTime("11/28/2016 5:35 PM"));
         $data = $this->rule->getData();
 
         $this->assertEquals(true, $return);
@@ -37,7 +34,7 @@ class DateFormatRuleTest extends \PHPUnit_Framework_TestCase
 
     public function testDateFormatTrueWithError()
     {
-        $return = $this->rule->verify(new DateTime("11/28/2016 5:35 PM"));
+        $return = $this->rule->process(new DateTime("11/28/2016 5:35 PM"));
         $data = $this->rule->getData();
 
         $this->assertEquals(true, $return);

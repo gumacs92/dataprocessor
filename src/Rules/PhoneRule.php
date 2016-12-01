@@ -15,8 +15,6 @@ class PhoneRule extends AbstractRule
 {
     public function rule()
     {
-        parent::rule();
-
-        return !empty(self::$data) && preg_match('/^([\+]?([\d]{0,3}))?[\(\.\-\s]*(([\d]{1,3})[\)\.\-\s]*)?(([\d]{3,5})[\.\-\s]?([\d]{4})|([\d]{2}[\.\-\s]?){4})$/', self::$data);
+        return !empty($this->data) && preg_match('/^([\+]?([\d]{0,3}))?[\(\.\-\s]*(([\d]{1,3})[\)\.\-\s]*)?(([\d]{3,5})[\.\-\s]?([\d]{4})|([\d]{2}[\.\-\s]?){4})$/', $this->data);
     }
 }

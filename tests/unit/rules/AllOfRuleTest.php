@@ -11,38 +11,39 @@ namespace Tests\Unit\Rules;
 
 use Processor\DataProcessor;
 use Processor\Exceptions\FailedProcessingException;
+use Processor\Rules\Abstraction\Errors;
 use Processor\Rules\Abstraction\RuleSettings;
 use Tests\Helpers\Tools;
 
 class AllOfRuleTest extends \PHPUnit_Framework_TestCase
 {
     public function testAllOfSuccessfulAll(){
-        $return = DataProcessor::init()->allOf(DataProcessor::init()->length(2, 4), DataProcessor::init()->setTypeInt()->intType())->setNameForErrors('allof')->verify("123", true);
-        $value = DataProcessor::init()->getData();
+        $return = DataProcessor::init()->allOf(DataProcessor::init()->length(2, 4), DataProcessor::init()->setTypeInt()->intType())->setName('allof')->verify("123", Errors::ALL);
+        $value = DataProcessor::getReturnData();
 
         $this->assertEquals(123, $value);
     }
 
     public function testAllOfOneError(){
         try {
-            DataProcessor::init()->allOf(DataProcessor::init()->length(2, 4), DataProcessor::init()->floatType())->setNameForErrors('allof')->verify("111", true);
+            DataProcessor::init()->allOf(DataProcessor::init()->length(2, 4), DataProcessor::init()->floatType())->setName('allof')->verify("111", Errors::ALL);
         } catch (FailedProcessingException $e) {
 
-            $this->assertEquals(2, sizeof($e->getAllErrors()));
-            $this->assertEquals(RuleSettings::getErrorSetting('allOf'), $e->getAllErrors()[0]);
-            $this->assertEquals(Tools::searchAndReplace(RuleSettings::getErrorSetting('floatType'), ["name" => "allof"]), $e->getAllErrors()[1][0]);
+            $this->assertEquals(2, sizeof($e->getErrors()['allOf']));
+            $this->assertEquals(RuleSettings::getErrorSetting('allOf'), $e->getErrors()['allOf']['allOf']);
+            $this->assertEquals(Tools::searchAndReplace(RuleSettings::getErrorSetting('floatType'), ["name" => "allof"]), $e->getErrors()['allOf']['allOf0']['floatType']);
         }
     }
 
     public function testAllOfAllError(){
         try {
-            DataProcessor::init()->allOf(DataProcessor::init()->length(2, 4), DataProcessor::init()->floatType())->setNameForErrors('allof')->verify("1", true);
+            DataProcessor::init()->allOf(DataProcessor::init()->length(2, 4), DataProcessor::init()->floatType())->setName('allof')->verify("1", Errors::ALL);
         } catch (FailedProcessingException $e) {
 
-            $this->assertEquals(3, sizeof($e->getAllErrors()));
-            $this->assertEquals(RuleSettings::getErrorSetting('allOf'), $e->getAllErrors()[0]);
-            $this->assertEquals(Tools::searchAndReplace(RuleSettings::getErrorSetting('length'), ["name" => "allof", "min" => 2, "max" => 4]), $e->getAllErrors()[1][0]);
-            $this->assertEquals(Tools::searchAndReplace(RuleSettings::getErrorSetting('floatType'), ["name" => "allof"]), $e->getAllErrors()[2][0]);
+            $this->assertEquals(3, sizeof($e->getErrors()['allOf']));
+            $this->assertEquals(RuleSettings::getErrorSetting('allOf'), $e->getErrors()['allOf']['allOf']);
+            $this->assertEquals(Tools::searchAndReplace(RuleSettings::getErrorSetting('length'), ["name" => "allof", "min" => 2, "max" => 4]), $e->getErrors()['allOf']['allOf0']['length']);
+            $this->assertEquals(Tools::searchAndReplace(RuleSettings::getErrorSetting('floatType'), ["name" => "allof"]), $e->getErrors()['allOf']['allOf1']['floatType']);
         }
     }
 }

@@ -10,6 +10,7 @@ namespace Tests\Unit\Rules\Validators;
 
 
 use Processor\Exceptions\RuleException;
+use Processor\Rules\Abstraction\Errors;
 use Processor\Rules\Abstraction\RuleSettings;
 use Processor\Rules\FloatValRule;
 
@@ -21,26 +22,25 @@ class FloatValRuleTest extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         $this->rule = new FloatValRule();
-        $this->rule->setRuleName('floatVal');
     }
 
     public function testFloatValTrue()
     {
-        $return = $this->rule->verify(10.1);
+        $return = $this->rule->process(10.1);
 
         $this->assertEquals(true, $return);
     }
 
     public function testFloatValTrueFromInt()
     {
-        $return = $this->rule->verify(10);
+        $return = $this->rule->process(10);
 
         $this->assertEquals(true, $return);
     }
 
     public function testFloatValTrueWithError()
     {
-        $return = $this->rule->verify(10.1, true);
+        $return = $this->rule->process(10.1, Errors::ALL);
 
         $this->assertEquals(true, $return);
     }
@@ -48,7 +48,7 @@ class FloatValRuleTest extends \PHPUnit_Framework_TestCase
     public function testFloatValFalseWithError()
     {
         try {
-            $return = $this->rule->verify("asd", true);
+            $return = $this->rule->process("asd", Errors::ALL);
         } catch (RuleException $e) {
             $return = false;
             $this->assertEquals(1, sizeof($e->getErrorMessage()));

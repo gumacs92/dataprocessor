@@ -14,7 +14,6 @@ class StringTypeRule extends AbstractRule
 {
     public function rule()
     {
-        parent::rule();
-        return is_string(self::$data);
+        return is_string($this->data);
     }
 }
