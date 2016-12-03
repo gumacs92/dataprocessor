@@ -9,7 +9,6 @@
 namespace Processor\Rules;
 
 use Processor\DataProcessor;
-use Processor\Exceptions\FailedProcessingException;
 use Processor\Rules\Abstraction\AbstractRule;
 
 class OneOfRule extends AbstractRule
@@ -22,6 +21,7 @@ class OneOfRule extends AbstractRule
         if (is_array($processors)) {
             foreach ($processors as $proc) {
                 $this->typeCheck($proc, DataProcessor::class);
+                $proc->setName($this->name);
             }
             $this->processors = $processors;
         } else {
@@ -31,27 +31,21 @@ class OneOfRule extends AbstractRule
 
     public function rule()
     {
-        $failed = true;
+        $success = false;
         $errors = [];
 
         /* @var DataProcessor $proc */
         foreach ($this->processors as $proc) {
-            try {
-                $oldData = $this->data;
-                $proc->setName($this->name);
-                $return = $proc->verify($this->data, $this->feedback);
+            $result = $proc->process($this->data, $this->feedback);
 
-                if ($return) {
-                    $this->data = $proc->getData();
-                    $failed = false;
-                }
-            } catch (FailedProcessingException $e) {
-                $this->data = $oldData;
-                $this->addReturnErrors($e->getErrors());
+            if ($result->isSuccess()) {
+                $success = true;
+                $this->data = $result->getData();
+            } else {
+                $this->addResultErrorNewLevel($result->getErrors());
             }
         }
 
-        return $failed ? false : true;
-
+        return $success;
     }
 }

@@ -18,35 +18,35 @@ class FloatTypeRuleTest extends \PHPUnit_Framework_TestCase
 {
     public function testFloatTypeTrue()
     {
-        $return = DataProcessor::init()->floatType()->verify(10.1);
+        $return = DataProcessor::init()->floatType()->process(10.1);
 
-        $this->assertEquals(true, $return);
+        $this->assertEquals(true, $return->isSuccess());
     }
 
     public function testFloatTypeFalse()
     {
-        $return = DataProcessor::init()->floatType()->verify(10);
+        $return = DataProcessor::init()->floatType()->process(10);
 
-        $this->assertEquals(false, $return);
+        $this->assertEquals(false, $return->isSuccess());
     }
 
     public function testFloatTypeTrueWithError()
     {
-        $return = DataProcessor::init()->floatType()->verify(10.1, Errors::ALL);
+        $return = DataProcessor::init()->floatType()->process(10.1, Errors::ALL);
 
-        $this->assertEquals(true, $return);
+        $this->assertEquals(true, $return->isSuccess());
     }
 
     public function testFloatTypeFalseWithError()
     {
         try {
-            DataProcessor::init()->floatType()->verify("123", Errors::ALL);
+            $return = DataProcessor::init()->floatType()->process("123", Errors::ALL);
         } catch (FailedProcessingException $e) {
             $return = false;
             $this->assertEquals(1, sizeof($e->getErrors()));
             $this->assertEquals(RuleSettings::getErrorSetting("floatType"), $e->getErrors()["floatType"]);
         } finally {
-            $this->assertEquals(false, $return);
+            $this->assertEquals(false, $return->isSuccess());
         }
     }
 }

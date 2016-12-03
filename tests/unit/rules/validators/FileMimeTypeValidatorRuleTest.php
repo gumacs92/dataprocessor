@@ -9,7 +9,6 @@
 namespace Tests\Unit\Rules\Validators;
 
 
-use Processor\Exceptions\RuleException;
 use Processor\Rules\Abstraction\Errors;
 use Processor\Rules\Abstraction\RuleSettings;
 use Processor\Rules\FileMimeTypeRule;
@@ -35,36 +34,37 @@ class FileMimeTypeRuleTest extends \PHPUnit_Framework_TestCase
         );
     }
 
-    public function testFileMimeTypeTrue(){
+    public function testFileMimeTypeTrue()
+    {
         $return = $this->rule->process($_FILES['test']);
 
         $this->assertEquals(true, $return);
     }
 
-    public function testFileMimeTypeFalse(){
+    public function testFileMimeTypeFalse()
+    {
         $_FILES['test']['tmp_name'] = 'd:\Development\testdata\testfrom\test.php';
         $return = $this->rule->process($_FILES['test']);
 
         $this->assertEquals(false, $return);
     }
 
-    public function testFileMimeTypeTrueWithErrors(){
+    public function testFileMimeTypeTrueWithErrors()
+    {
         $return = $this->rule->process($_FILES['test'], Errors::ALL);
 
         $this->assertEquals(true, $return);
     }
 
-    public function testFileMimeTypeFalseWithErrors(){
+    public function testFileMimeTypeFalseWithErrors()
+    {
         $_FILES['test']['tmp_name'] = 'd:\Development\testdata\testfrom\test.php';
-        try{
-            $return = $this->rule->process($_FILES['test'], Errors::ALL);
-        } catch (RuleException $e){
-            $return = false;
-            $this->assertEquals(Tools::searchAndReplace(RuleSettings::getErrorSetting('fileMimeType'), ["mimeType" => "image/jpeg"]), $e->getErrorMessage());
-        } finally {
 
-            $this->assertEquals(false, $return);
-        }
+        $return = $this->rule->process($_FILES['test'], Errors::ALL);
 
+        $return = false;
+        $this->assertEquals(Tools::searchAndReplace(RuleSettings::getErrorSetting('fileMimeType', RuleSettings::MODE_DEFAULT), ["mimeType" => "image/jpeg"]), $this->rule->getMockedErrorMessage());
+
+        $this->assertEquals(false, $return);
     }
 }

@@ -9,7 +9,6 @@
 namespace Tests\Unit\Rules;
 
 
-use Processor\Exceptions\RuleException;
 use Processor\Rules\Abstraction\AbstractRule;
 use Processor\Rules\Abstraction\Errors;
 use Processor\Rules\Abstraction\RuleSettings;
@@ -64,14 +63,9 @@ class FilterValidatorRuleTest extends \PHPUnit_Framework_TestCase
     public function testFilterValidatorFalseValidatorWithError()
     {
         $this->rule = new FilterValidatorRule(FILTER_VALIDATE_EMAIL);
-        try {
-            $return = $this->rule->process("asdf@gmail!.com", Errors::ALL);
-        } catch (RuleException $e) {
-            $return = false;
-            $this->assertEquals(1, sizeof($e->getErrorMessage()));
-            $this->assertEquals(Tools::searchAndReplace(RuleSettings::getErrorSetting('filterValidator'), ["filter" => FILTER_VALIDATE_EMAIL]), $e->getErrorMessage());
-        } finally {
-            $this->assertEquals(false, $return);
-        }
+        $return = $this->rule->process("asdf@gmail!.com", Errors::ALL);
+
+        $this->assertEquals(Tools::searchAndReplace(RuleSettings::getErrorSetting('filterValidator'), ["filter" => FILTER_VALIDATE_EMAIL]), $this->rule->getResultErrors()['filterValidator']);
+        $this->assertEquals(false, $return);
     }
 }

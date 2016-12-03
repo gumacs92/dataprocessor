@@ -8,7 +8,6 @@
 
 namespace Tests\Unit\Rules;
 
-use Processor\Exceptions\RuleException;
 use Processor\Rules\Abstraction\Errors;
 use Processor\Rules\Abstraction\RuleSettings;
 use Processor\Rules\FileMoveUploadRule;
@@ -34,36 +33,34 @@ class FileMoveUploadRuleTest extends \PHPUnit_Framework_TestCase
         );
     }
 
-    public function testFileMoveUploadTrue(){
+    public function testFileMoveUploadTrue()
+    {
         $return = $this->rule->process($_FILES['test']);
 
         $this->assertEquals(true, $return);
     }
 
-    public function testFileMoveUploadFalse(){
-        $_FILES['test']['tmp_name'] =  '';
+    public function testFileMoveUploadFalse()
+    {
+        $_FILES['test']['tmp_name'] = '';
         $return = $this->rule->process($_FILES['test']);
 
         $this->assertEquals(false, $return);
     }
 
-    public function testFileMoveUploadTrueWithErrors(){
+    public function testFileMoveUploadTrueWithErrors()
+    {
         $return = $this->rule->process($_FILES['test'], Errors::ALL);
 
         $this->assertEquals(true, $return);
     }
 
-    public function testFileMoveUploadFalseWithErrors(){
-        $_FILES['test']['tmp_name'] =  '';
-        try{
-            $return = $this->rule->process($_FILES['test'], Errors::ALL);
-        } catch (RuleException $e){
-            $return = false;
-            $this->assertEquals(Tools::searchAndReplace(RuleSettings::getErrorSetting('fileMoveUpload'), ["minSize" => 100000, "maxSize" => 200000]), $e->getErrorMessage());
-        } finally {
+    public function testFileMoveUploadFalseWithErrors()
+    {
+        $_FILES['test']['tmp_name'] = '';
+        $return = $this->rule->process($_FILES['test'], Errors::ALL);
 
-            $this->assertEquals(false, $return);
-        }
-
+        $this->assertEquals(Tools::searchAndReplace(RuleSettings::getErrorSetting('fileMoveUpload'), ["minSize" => 100000, "maxSize" => 200000]), $this->rule->getResultErrors()['fileMoveUpload']);
+        $this->assertEquals(false, $return);
     }
 }

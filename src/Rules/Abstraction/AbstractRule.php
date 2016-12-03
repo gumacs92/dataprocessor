@@ -15,11 +15,12 @@ abstract class AbstractRule implements IValidatable
 {
     protected $data;
     protected $feedback;
+    protected $canBeEmpty = false;
 
     protected $error = "";
 
-    protected $returnErrors = [];
-    protected $ruleName;
+    private $resultErrors = [];
+    private $ruleName;
     protected $name;
 
     public function __construct()
@@ -31,44 +32,84 @@ abstract class AbstractRule implements IValidatable
 
     abstract public function rule();
 
-    public final function process($data, $feedback = Errors::NONE)
+//    public final function callDatProcessor
+
+    public function process($data, $feedback = Errors::NONE)
     {
-        $this->data = $data;
         $this->feedback = $feedback;
+
+        if (!$this->setData($data)) {
+            $this->addEmptyError();
+            return false;
+        }
+
         if (!$this->rule()) {
-            if (empty($this->returnErrors)) {
-                $this->addReturnError();
+            if (empty($this->resultErrors)) {
+                $this->addResultErrorSameLevel();
             }
             return false;
         }
         return true;
     }
 
-    protected final function addReturnError()
+    protected final function addEmptyError()
     {
-        $this->returnErrors[$this->ruleName] = $this->getMockedErrorMessage();
+        $this->resultErrors['empty'] = RuleSettings::getErrorSetting('empty');
     }
 
-    protected final function addReturnErrors($errors)
+    protected final function addResultErrorSameLevel($errors = '', $mode = RuleSettings::MODE_DEFAULT)
     {
-        if (!key_exists($this->ruleName, $this->returnErrors) && $this->feedback !== Errors::NONE) {
-            $this->returnErrors[$this->ruleName][$this->ruleName] = $this->getMockedErrorMessage();
+        if ($this->feedback !== Errors::NONE) {
+            if (!empty($errors)) {
+                if (is_array($errors)) {
+                    if ($this->feedback === Errors::ONE) {
+                        $this->resultErrors[key($errors)] = current($errors);
+                    } elseif ($this->feedback === Errors::ALL) {
+                        foreach ($errors as $key => $value) {
+                            $this->resultErrors[$key] = $value;
+                        }
+                    }
+                } else {
+                    $this->resultErrors[$this->ruleName] = $errors;
+                }
+            } else {
+                $this->resultErrors[$this->ruleName] = $this->getMockedErrorMessage($mode);
+            }
         }
+    }
 
-        if ($this->feedback === Errors::ONE) {
-            $this->returnErrors[$this->ruleName][key($errors)] = current($errors);
-        } elseif ($this->feedback === Errors::ALL) {
-            $i = 0;
-            $key = $this->ruleName . $i;
-            while (key_exists($key, $this->returnErrors[$this->ruleName])) {
-                $i++;
-                $key = $this->ruleName . $i;
+    protected final function addResultErrorNewLevel($errors = '', $escortMessage = '', $mode = RuleSettings::MODE_DEFAULT)
+    {
+        if ($this->feedback !== Errors::NONE) {
+            if (empty($escortMessage) && !empty($errors)) {
+                $this->resultErrors[$this->ruleName][$this->ruleName] = $this->getMockedErrorMessage($mode);
+            } else {
+                $this->resultErrors[$this->ruleName][$this->ruleName] = $escortMessage;
             }
 
-            foreach ($errors as $k => $v) {
-                $this->returnErrors[$this->ruleName][$key][$k] = $v;
-            }
+            if (!empty($errors)) {
+                if (is_array($errors)) {
+                    if ($this->feedback === Errors::ONE) {
+                        $this->resultErrors[$this->ruleName][key($errors)] = current($errors);
+                    } elseif ($this->feedback === Errors::ALL) {
+                        $i = 0;
+                        $key = $this->ruleName . $i;
+                        while (key_exists($key, $this->resultErrors[$this->ruleName])) {
+                            $i++;
+                            $key = $this->ruleName . $i;
+                        }
 
+                        foreach ($errors as $k => $v) {
+                            $this->resultErrors[$this->ruleName][$key][$k] = $v;
+                        }
+
+                    }
+                } else {
+                    $this->resultErrors[$this->ruleName][$this->ruleName] = $errors;
+                }
+            } else {
+                $this->resultErrors[$this->ruleName][$this->ruleName] = $this->getMockedErrorMessage($mode);
+            }
         }
     }
 
@@ -132,9 +173,9 @@ abstract class AbstractRule implements IValidatable
         return $msg;
     }
 
-    final public function getMockedErrorMessage()
+    final public function getMockedErrorMessage($mode = RuleSettings::MODE_DEFAULT)
     {
-        $error = RuleSettings::getErrorSetting($this->ruleName);
+        $error = RuleSettings::getErrorSetting($this->ruleName, $mode);
         if (is_array($error)) {
             $errormsg = $error[$this->error];
         } else {
@@ -158,10 +199,8 @@ abstract class AbstractRule implements IValidatable
      */
     final public function setName($name)
     {
-        if (!is_string($name) && !is_null($name)) {
-            $this->returnErrors['invalid_type_error'] = 'Fatal error: string expected for setName, got ' . gettype($name) . " instead";
-            throw new InvalidArgumentException($this->returnErrors['invalid_type_error']);
-        }
+        $this->typeCheck($name, 'string');
+
         if ($name === null) {
             $this->name = null;
         } else {
@@ -172,9 +211,15 @@ abstract class AbstractRule implements IValidatable
     }
 
 
-    final public function setData($data)
+    final private function setData($data)
     {
+        if (!$this->canBeEmpty) {
+            if ((empty($data) || !isset($data)) && !is_bool($data) && $data == 0) {
+                return false;
+            }
+        }
         $this->data = $data;
+        return true;
     }
 
     /**
@@ -188,8 +233,16 @@ abstract class AbstractRule implements IValidatable
     /**
      * @return array
      */
-    final public function getReturnErrors()
+    final public function getResultErrors()
     {
-        return $this->returnErrors;
+        return $this->resultErrors;
+    }
+
+    /**
+     * @return string
+     */
+    final public function getRuleName()
+    {
+        return $this->ruleName;
     }
 }

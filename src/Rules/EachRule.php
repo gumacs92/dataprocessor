@@ -9,7 +9,6 @@
 namespace Processor\Rules;
 
 use Processor\DataProcessor;
-use Processor\Exceptions\FailedProcessingException;
 use Processor\Rules\Abstraction\AbstractRule;
 
 class EachRule extends AbstractRule
@@ -23,43 +22,39 @@ class EachRule extends AbstractRule
     {
         parent::__construct();
         $this->valueProcessor = $this->typeCheck($valueProcessor, DataProcessor::class);
+        $this->valueProcessor === null ?: $this->valueProcessor->setName($this->name);
         $this->keyProcessor = $this->typeCheck($keyProcessor, DataProcessor::class);
+        $this->keyProcessor === null ?: $this->keyProcessor->setName($this->name);
+
     }
 
     public function rule()
     {
-
-
         $keysuccess = true;
         $valuesuccess = true;
         $success = true;
-        $errors = [];
 
 
         foreach ($this->data as $key => $value) {
             if (isset($this->valueProcessor)) {
-                try {
-                    $oldData = $value;
-                    $this->valueProcessor->setName($this->name);
-                    $valuesuccess = $this->valueProcessor->verify($value, $this->feedback);
-                    $this->data = $this->valueProcessor->getData();
-                } catch (FailedProcessingException $e) {
-                    $valuesuccess = false;
-                    $this->addReturnErrors($e->getErrors());
-                    $value = $oldData;
+                $result = $this->valueProcessor->process($value, $this->feedback);
+
+                if (!($valuesuccess = $result->isSuccess())) {
+                    $this->addResultErrorNewLevel($result->getErrors());
+                } else {
+                    $this->data[$key] = $result->getData();
                 }
             }
             if (isset($this->keyProcessor)) {
-                try {
-                    $oldData = $key;
-                    $this->keyProcessor->setName($this->name);
-                    $keysuccess = $this->keyProcessor->verify($key, $this->feedback);
-                    $this->data = $this->keyProcessor->getData();
-                } catch (FailedProcessingException $e) {
-                    $keysuccess = false;
-                    $this->addReturnErrors($e->getErrors());
-                    $key = $oldData;
+                $result = $this->keyProcessor->process($key, $this->feedback);
+
+                if (!($keysuccess = $result->isSuccess())) {
+                    $this->addResultErrorNewLevel($result->getErrors());
+                } else {
+                    $this->data[$result->getData()] = $this->data[$key];
+                    unset($this->data[$key]);
                 }
+
             }
 
             if (!$keysuccess || !$valuesuccess) {

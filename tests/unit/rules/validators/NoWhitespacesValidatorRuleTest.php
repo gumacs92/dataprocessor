@@ -17,39 +17,39 @@ use Processor\Rules\Abstraction\RuleSettings;
 class NoWhitespacesRuleTest extends \PHPUnit_Framework_TestCase
 {
     public function testNoWhitespacesFalseExtraCharacters(){
-        $return = DataProcessor::init()->noWhitespaces("a")->verify("123a");
+        $return = DataProcessor::init()->noWhitespaces("a")->process("123a");
 
-        $this->assertEquals(false, $return);
+        $this->assertEquals(false, $return->isSuccess());
     }
 
     public function testNoWhitespacesTrue(){
-        $return = DataProcessor::init()->noWhitespaces()->verify("123");
+        $return = DataProcessor::init()->noWhitespaces()->process("123");
 
-        $this->assertEquals(true, $return);
+        $this->assertEquals(true, $return->isSuccess());
     }
 
     public function testNoWhitespacesFalse(){
-        $return = DataProcessor::init()->noWhitespaces()->verify("12a ");
+        $return = DataProcessor::init()->noWhitespaces()->process("12a ");
 
-        $this->assertEquals(false, $return);
+        $this->assertEquals(false, $return->isSuccess());
     }
 
     public function testNoWhitespacesTrueWithError(){
-        $return = DataProcessor::init()->noWhitespaces()->verify("123", Errors::ALL);
+        $return = DataProcessor::init()->noWhitespaces()->process("123", Errors::ALL);
 
-        $this->assertEquals(true, $return);
+        $this->assertEquals(true, $return->isSuccess());
 
     }
 
     public function testNoWhitespacesFalseWithError(){
         try{
-            DataProcessor::init()->noWhitespaces()->verify("12a ", Errors::ALL);
+            $return = DataProcessor::init()->noWhitespaces()->process("12a ", Errors::ALL);
         } catch(FailedProcessingException $e) {
             $return = false;
             $this->assertEquals(1, sizeof($e->getErrors()));
             $this->assertEquals(RuleSettings::getErrorSetting("noWhitespaces"), $e->getErrors()["noWhitespaces"]);
         }finally{
-            $this->assertEquals(false, $return);
+            $this->assertEquals(false, $return->isSuccess());
         }
     }
 }

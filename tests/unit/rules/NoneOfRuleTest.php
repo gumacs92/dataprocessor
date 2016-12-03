@@ -10,44 +10,54 @@ namespace Tests\Unit\Rules;
 
 
 use Processor\DataProcessor;
-use Processor\Exceptions\FailedProcessingException;
+use Processor\Rules\Abstraction\AbstractRule;
 use Processor\Rules\Abstraction\Errors;
 use Processor\Rules\Abstraction\RuleSettings;
+use Processor\Rules\NoneOfRule;
 use Tests\Helpers\Tools;
 
 class NoneOfRuleTest extends \PHPUnit_Framework_TestCase
 {
-    public function testNoneOfTrue(){
-        $return = DataProcessor::init()->noneOf(DataProcessor::init()->intType(), DataProcessor::init()->setTypeInt()->floatType())->setName('noneof')->verify(10.1);
-        $value = DataProcessor::getReturnData();
+    /* @var AbstractRule $rule */
+    private $rule;
+
+    public function setUp()
+    {
+        $this->rule = new NoneOfRule(DataProcessor::init()->numeric(), DataProcessor::init()->floatVal()->setTypeFloat()->floatType());
+    }
+
+    public function testNoneOfTrue()
+    {
+        $return = $this->rule->process("asd");
 
         $this->assertEquals(true, $return);
-        $this->assertEquals(10.1, $value);
+        $this->assertEquals("asd", $this->rule->getData());
     }
 
-    public function testNoneOfFalse(){
-        $return = DataProcessor::init()->noneOf(DataProcessor::init()->length(2, 4), DataProcessor::init()->floatType())->setName('noneof')->verify("1.1");
+    public function testNoneOfFalse()
+    {
+        $return = $this->rule->process(1);
 
-            $this->assertEquals(false, $return);
+        $this->assertEquals(false, $return);
     }
 
-    public function testNoneOfTrueWithErrors(){
-        $return = DataProcessor::init()->noneOf(DataProcessor::init()->intType(), DataProcessor::init()->setTypeInt()->floatType())->setName('noneof')->verify(10.1, Errors::ALL);
-        $value = DataProcessor::getReturnData();
+    public function testNoneOfTrueWithErrors()
+    {
+        $return = $this->rule->process("asd", Errors::ALL);
 
         $this->assertEquals(true, $return);
-        $this->assertEquals(10.1, $value);
+        $this->assertEquals("asd", $this->rule->getData());
     }
 
-    public function testNoneOfFalseWithErrors(){
-        try {
-             DataProcessor::init()->noneOf(DataProcessor::init()->length(2, 4), DataProcessor::init()->setTypeInt()->intType())->setName('noneof')->verify("1.1", Errors::ALL);
-        } catch (FailedProcessingException $e) {
+    public function testNoneOfFalseWithErrors()
+    {
+        $this->rule->process("1.1", Errors::ALL);
 
-            $this->assertEquals(3, sizeof($e->getErrors()['noneOf']));
-            $this->assertEquals(RuleSettings::getErrorSetting('noneOf'), $e->getErrors()['noneOf']['noneOf']);
-            $this->assertEquals(Tools::searchAndReplace(RuleSettings::getErrorSetting('length'), ["name" => "noneof", "min" => 2, "max" => 4]), $e->getErrors()['noneOf']['noneOf0']['length']);
-            $this->assertEquals(Tools::searchAndReplace(RuleSettings::getErrorSetting('setTypeInt'), ["name" => "noneof"]), $e->getErrors()['noneOf']['noneOf1']['setTypeInt']);
-        }
+        $this->assertEquals(3, sizeof($this->rule->getResultErrors()['noneOf']));
+        $this->assertEquals(RuleSettings::getErrorSetting('noneOf'), $this->rule->getResultErrors()['noneOf']['noneOf']);
+        $this->assertEquals(Tools::searchAndReplace(RuleSettings::getErrorSetting('numeric', RuleSettings::MODE_NEGATED), ["min" => 2, "max" => 4]), $this->rule->getResultErrors()['noneOf']['noneOf0']['numeric']);
+        $this->assertEquals(Tools::searchAndReplace(RuleSettings::getErrorSetting('floatVal', RuleSettings::MODE_NEGATED), []), $this->rule->getResultErrors()['noneOf']['noneOf1']['floatVal']);
+        $this->assertEquals(Tools::searchAndReplace(RuleSettings::getErrorSetting('setTypeFloat', RuleSettings::MODE_NEGATED), []), $this->rule->getResultErrors()['noneOf']['noneOf1']['setTypeFloat']);
+        $this->assertEquals(Tools::searchAndReplace(RuleSettings::getErrorSetting('floatType', RuleSettings::MODE_NEGATED), []), $this->rule->getResultErrors()['noneOf']['noneOf1']['floatType']);
     }
 }

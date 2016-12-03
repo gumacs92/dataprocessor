@@ -9,14 +9,14 @@
 namespace Tests\Unit\Rules\Validators;
 
 
-use Processor\Exceptions\RuleException;
+use Processor\Rules\Abstraction\AbstractRule;
 use Processor\Rules\Abstraction\Errors;
 use Processor\Rules\Abstraction\RuleSettings;
 use Processor\Rules\IntValRule;
 
 class IntValRuleTest extends \PHPUnit_Framework_TestCase
 {
-    /* @var \Processor\Rules\AbstractRule $rule */
+    /* @var AbstractRule $rule */
     private $rule;
 
     public function setUp()
@@ -47,14 +47,11 @@ class IntValRuleTest extends \PHPUnit_Framework_TestCase
 
     public function testIntValFalseWithError()
     {
-        try {
-            $return = $this->rule->process("asd", Errors::ALL);
-        } catch (RuleException $e) {
-            $return = false;
-            $this->assertEquals(1, sizeof($e->getErrorMessage()));
-            $this->assertEquals(RuleSettings::getErrorSetting("intVal"), $e->getErrorMessage());
-        } finally {
-            $this->assertEquals(false, $return);
-        }
+        $return = $this->rule->process("asd", Errors::ALL);
+
+        $this->rule->getMockedErrorMessage();
+        $this->assertEquals(RuleSettings::getErrorSetting("intVal"), $this->rule->getMockedErrorMessage());
+
+        $this->assertEquals(false, $return);
     }
 }

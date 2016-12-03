@@ -17,23 +17,38 @@ use Processor\Rules\Abstraction\RuleSettings;
 
 class DataProcessorTest extends \PHPUnit_Framework_TestCase
 {
+    public function testEmptyStringWithoutOptional()
+    {
+        $return = DataProcessor::init()->numeric()->process("", Errors::ONE);
+
+        $this->assertEquals(false, $return->isSuccess());
+        $this->assertEquals(RuleSettings::getErrorSetting('empty'), $return->getErrors()['empty']);
+    }
+
+    public function testNullWithoutOptional()
+    {
+        $return = DataProcessor::init()->numeric()->process(null, Errors::ONE);
+
+        $this->assertEquals(false, $return->isSuccess());
+        $this->assertEquals(RuleSettings::getErrorSetting('empty'), $return->getErrors()['empty']);
+    }
 
     public function testComplexRule1(){
-        $return = DataProcessor::init()->each(DataProcessor::init()->intType()->in([10, 11, 12]))->verify([10, 11, 10]);
+        $return = DataProcessor::init()->each(DataProcessor::init()->intType()->in([10, 11, 12]))->process([10, 11, 10]);
 
-        $this->assertEquals(true, $return);
+        $this->assertEquals(true, $return->isSuccess());
     }
 
     public function testSetName()
     {
         try {
-            $return = DataProcessor::init()->setTypeInt()->floatType()->setName('alma')->verify("123asd", Errors::ONE);
+            $return = DataProcessor::init()->setTypeInt()->floatType()->setName('alma')->process("123asd", Errors::ONE);
         } catch (FailedProcessingException $e) {
 
             $this->assertEquals(1, sizeof($e->getErrors()));
             $search = "/({{)(name)(}})/";
             $replace = "alma";
-            $msg = RuleSettings::getErrorSetting('floatType');
+            $msg = RuleSettings::getErrorSetting('floatType', RuleSettings::MODE_DEFAULT);
             $msg = preg_replace($search, $replace, $msg);
             $this->assertEquals($msg, $e->getErrors()['floatType']);
 
@@ -42,28 +57,28 @@ class DataProcessorTest extends \PHPUnit_Framework_TestCase
 
     public function testIntCastAndIntVal()
     {
-        $this->expectException('\Processor\Exceptions\FailedProcessingException');
-        $return = DataProcessor::init()->setTypeInt()->floatType()->verify("123asd", Errors::ALL);
+        $return = DataProcessor::init()->setTypeInt()->floatType()->process("123asd", Errors::ALL);
+
+        $this->assertEquals(RuleSettings::getErrorSetting('floatType', RuleSettings::MODE_DEFAULT), $return->getErrors()['floatType']);
     }
 
     public function testIntCast()
     {
-        $return = DataProcessor::init()->setTypeInt()->verify("123asd", Errors::ALL);
-        $value = DataProcessor::getReturnData();
+        $return = DataProcessor::init()->setTypeInt()->process("123asd", Errors::ALL);
 
-        $this->assertEquals('integer', gettype($value));
-        $this->assertEquals(123, $value);
+        $this->assertEquals('integer', gettype($return->getData()));
+        $this->assertEquals(123, $return->getData());
     }
 
     public function testReturnNumericAndIntValError()
     {
         try {
-            DataProcessor::init()->numeric()->intType()->verify("asd", Errors::ALL);
+            DataProcessor::init()->numeric()->intType()->process("asd", Errors::ALL);
         } catch (FailedProcessingException $e) {
 
             $this->assertEquals(2, sizeof($e->getErrors()));
-            $this->assertEquals(RuleSettings::getErrorSetting('numeric'), $e->getErrors()['numeric']);
-            $this->assertEquals(RuleSettings::getErrorSetting('intType'), $e->getErrors()['intType']);
+            $this->assertEquals(RuleSettings::getErrorSetting('numeric', RuleSettings::MODE_DEFAULT), $e->getErrors()['numeric']);
+            $this->assertEquals(RuleSettings::getErrorSetting('intType', RuleSettings::MODE_DEFAULT), $e->getErrors()['intType']);
 
         }
     }
@@ -71,36 +86,36 @@ class DataProcessorTest extends \PHPUnit_Framework_TestCase
     public function testReturnNumericErrorOnly()
     {
         try {
-            DataProcessor::init()->numeric()->intType()->verify("asd", Errors::ONE);
+            DataProcessor::init()->numeric()->intType()->process("asd", Errors::ONE);
         } catch (FailedProcessingException $e) {
 
             $this->assertEquals(1, sizeof($e->getErrors()));
-            $this->assertEquals(RuleSettings::getErrorSetting('numeric'), $e->getErrors()['numeric']);
+            $this->assertEquals(RuleSettings::getErrorSetting('numeric', RuleSettings::MODE_DEFAULT), $e->getErrors()['numeric']);
         }
     }
 
 //    public function testInvalidArgumentExceptionTooManyArgument()
 //    {
 //        $this->expectException('\Processor\Exceptions\InvalidArgumentException');
-//        $result = DataProcessor::init()->optional('asd', 10)->verify(10);
+//        $result = DataProcessor::init()->optional('asd', 10)->process(10);
 //    }
 //
 //    public function testInvalidArgumentExceptionNoArgumentExpected()
 //    {
 //        $this->expectException('\Processor\Exceptions\InvalidArgumentException');
-//        $result = DataProcessor::init()->numeric('asd')->verify(10);
+//        $result = DataProcessor::init()->numeric('asd')->process(10);
 //    }
 //
 //    public function testInvalidArgumentExceptionArgumentTypeError()
 //    {
 //        $this->expectException('\Processor\Exceptions\InvalidArgumentException');
-//        $result = DataProcessor::init()->optional("asd")->verify(10);
+//        $result = DataProcessor::init()->optional("asd")->process(10);
 //    }
 //
 //    public function testInvalidRuleException()
 //    {
 //        $this->expectException('Processor\Exceptions\InvalidRuleException');
-//        $result = DataProcessor::init()->gasd(DataProcessor::init()->numeric())->verify(10);
+//        $result = DataProcessor::init()->gasd(DataProcessor::init()->numeric())->process(10);
 //    }
 
 

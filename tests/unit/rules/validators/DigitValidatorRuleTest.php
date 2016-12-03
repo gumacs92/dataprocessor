@@ -16,40 +16,45 @@ use Processor\Rules\Abstraction\RuleSettings;
 
 class DigitRuleTest extends \PHPUnit_Framework_TestCase
 {
-    public function testDigitTrueExtraCharacters(){
-        $return = DataProcessor::init()->digit("asd")->verify("123asd");
+    public function testDigitTrueExtraCharacters()
+    {
+        $return = DataProcessor::init()->digit("asd")->process("123asd");
 
-        $this->assertEquals(true, $return);
+        $this->assertEquals(true, $return->isSuccess());
     }
 
-    public function testDigitTrue(){
-        $return = DataProcessor::init()->digit()->verify("123");
+    public function testDigitTrue()
+    {
+        $return = DataProcessor::init()->digit()->process("123");
 
-        $this->assertEquals(true, $return);
+        $this->assertEquals(true, $return->isSuccess());
     }
 
-    public function testDigitFalse(){
-        $return = DataProcessor::init()->digit()->verify("12a");
+    public function testDigitFalse()
+    {
+        $return = DataProcessor::init()->digit()->process("12a");
 
-        $this->assertEquals(false, $return);
+        $this->assertEquals(false, $return->isSuccess());
     }
 
-    public function testDigitTrueWithError(){
-        $return = DataProcessor::init()->digit()->verify("123", Errors::ALL);
+    public function testDigitTrueWithError()
+    {
+        $return = DataProcessor::init()->digit()->process("123", Errors::ALL);
 
-        $this->assertEquals(true, $return);
+        $this->assertEquals(true, $return->isSuccess());
 
     }
 
-    public function testDigitFalseWithError(){
-        try{
-            DataProcessor::init()->digit()->verify("12a", Errors::ALL);
-        } catch(FailedProcessingException $e) {
+    public function testDigitFalseWithError()
+    {
+        try {
+            $return = DataProcessor::init()->digit()->process("12a", Errors::ALL);
+        } catch (FailedProcessingException $e) {
             $return = false;
             $this->assertEquals(1, sizeof($e->getErrors()));
             $this->assertEquals(RuleSettings::getErrorSetting("digit"), $e->getErrors()["digit"]);
-        }finally{
-            $this->assertEquals(false, $return);
+        } finally {
+            $this->assertEquals(false, $return->isSuccess());
         }
     }
 }

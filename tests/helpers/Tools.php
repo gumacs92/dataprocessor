@@ -14,7 +14,7 @@ class Tools
     public static function searchAndReplace($message, $tags){
         $msg = $message;
         foreach ($tags as $tag => $value) {
-            if (!empty($value)) {
+            if (!empty($value) || $value == 0 ) {
                 $search = "/({{)($tag)(}})/";
                 $replace = $value;
                 $msg = preg_replace($search, $replace, $msg);

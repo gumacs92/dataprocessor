@@ -9,7 +9,6 @@
 namespace Processor\Rules;
 
 use Processor\DataProcessor;
-use Processor\Exceptions\FailedProcessingException;
 use Processor\Rules\Abstraction\AbstractRule;
 
 class AllOfRule extends AbstractRule
@@ -22,6 +21,7 @@ class AllOfRule extends AbstractRule
         if (is_array($processors)) {
             foreach ($processors as $proc) {
                 $this->typeCheck($proc, DataProcessor::class);
+                $proc->setName($this->name);
             }
             $this->processors = $processors;
         } else {
@@ -36,19 +36,13 @@ class AllOfRule extends AbstractRule
 
         /* @var DataProcessor $proc */
         foreach ($this->processors as $proc) {
-            try {
-                $oldData = $this->data;
-                $proc->setName($this->name);
-                $return = $proc->verify($this->data, $this->feedback);
+            $result = $proc->process($this->data, $this->feedback);
 
-                if (!$return) {
-                    $this->data = $proc->getData();
-                    $failed = true;
-                }
-            } catch (FailedProcessingException $e) {
+            if (!$result->isSuccess()) {
                 $failed = true;
-                $this->addReturnErrors($e->getErrors());
-                $this->data = $oldData;
+                $this->addResultErrorNewLevel($result->getErrors());
+            } else {
+                $this->data = $result->getData();
             }
         }
 

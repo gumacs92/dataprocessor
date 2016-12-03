@@ -9,7 +9,6 @@
 namespace Tests\Unit\Rules;
 
 
-use Processor\Exceptions\RuleException;
 use Processor\Rules\Abstraction\AbstractRule;
 use Processor\Rules\Abstraction\Errors;
 use Processor\Rules\Abstraction\RuleSettings;
@@ -53,14 +52,9 @@ class DateRuleTest extends \PHPUnit_Framework_TestCase
 
     public function testDateFalseWithError()
     {
-        try {
-            $return = $this->rule->process("123-aáéű webcam1", Errors::ALL);
-        } catch (RuleException $e) {
-            $return = false;
-            $this->assertEquals(1, sizeof($e->getErrorMessage()));
-            $this->assertEquals(Tools::searchAndReplace(RuleSettings::getErrorSetting("date"), ["format" => "m/d/Y h:i a"]), $e->getErrorMessage());
-        } finally {
-            $this->assertEquals(false, $return);
-        }
+        $return = $this->rule->process("123-aáéű webcam1", Errors::ALL);
+
+        $this->assertEquals(Tools::searchAndReplace(RuleSettings::getErrorSetting("date"), ["format" => "m/d/Y h:i a"]), $this->rule->getResultErrors()['date']);
+        $this->assertEquals(false, $return);
     }
 }

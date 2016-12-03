@@ -61,23 +61,23 @@ class FileUploadTest extends \PHPUnit_Framework_TestCase
 
     public function testMultipleFileUploadSuccessful()
     {
-        $return = DataProcessor::init()->each(DataProcessor::init()->fileNoError()->fileUploaded()->fileMimeType('image/jpeg')->fileSize(100000)->fileMoveUpload('asd', 'd:\Development\testdata\testto\\'))->verify($_FILES);
+        $return = DataProcessor::init()->each(DataProcessor::init()->fileNoError()->fileUploaded()->fileMimeType('image/jpeg')->fileSize(100000)->fileMoveUpload('asd', 'd:\Development\testdata\testto\\'))->process($_FILES);
 
-        $this->assertEquals(true, $return);
+        $this->assertEquals(true, $return->isSuccess());
     }
 
     public function testUploadSuccessful()
     {
-        $return = DataProcessor::init()->fileNoError()->fileUploaded()->fileMimeType('image/jpeg')->fileSize(100000)->fileMoveUpload('asd', 'd:\Development\testdata\testfrom\\')->verify($_FILES['test']);
+        $return = DataProcessor::init()->fileNoError()->fileUploaded()->fileMimeType('image/jpeg')->fileSize(100000)->fileMoveUpload('asd', 'd:\Development\testdata\testfrom\\')->process($_FILES['test']);
 
-        $this->assertEquals(true, $return);
+        $this->assertEquals(true, $return->isSuccess());
     }
 
     public function testUploadFailureAtNoError()
     {
         $_FILES['test']['error'] = 1;
         try {
-            DataProcessor::init()->fileNoError()->fileUploaded()->fileMimeType('image/jpeg')->fileSize(100000)->fileMoveUpload('asd', 'd:\Development\testdata\testfrom\\')->verify($_FILES['test'], Errors::ALL);
+            $return = DataProcessor::init()->fileNoError()->fileUploaded()->fileMimeType('image/jpeg')->fileSize(100000)->fileMoveUpload('asd', 'd:\Development\testdata\testfrom\\')->process($_FILES['test'], Errors::ALL);
         } catch (FailedProcessingException $e) {
             $return = false;
             $expected = RuleSettings::getErrorSetting("fileNoError")['exceeded_default_limit'];
@@ -85,7 +85,7 @@ class FileUploadTest extends \PHPUnit_Framework_TestCase
             $this->assertEquals($expected, $got);
         } finally {
 
-            $this->assertEquals(false, $return);
+            $this->assertEquals(false, $return->isSuccess());
         }
     }
 
@@ -93,7 +93,7 @@ class FileUploadTest extends \PHPUnit_Framework_TestCase
     {
         $_FILES['test']['tmp_name'] = "";
         try {
-            DataProcessor::init()->fileNoError()->fileUploaded()->fileMimeType('image/jpeg')->fileSize(100000)->fileMoveUpload('asd', 'd:\Development\testdata\testfrom\\')->verify($_FILES['test'], Errors::ALL);
+            $return = DataProcessor::init()->fileNoError()->fileUploaded()->fileMimeType('image/jpeg')->fileSize(100000)->fileMoveUpload('asd', 'd:\Development\testdata\testfrom\\')->process($_FILES['test'], Errors::ALL);
         } catch (FailedProcessingException $e) {
             $return = false;
             $expected = RuleSettings::getErrorSetting("fileUploaded");
@@ -101,14 +101,14 @@ class FileUploadTest extends \PHPUnit_Framework_TestCase
             $this->assertEquals($expected, $got);
         } finally {
 
-            $this->assertEquals(false, $return);
+            $this->assertEquals(false, $return->isSuccess());
         }
     }
 
     public function testUploadFailureAtMimeType()
     {
         try {
-            DataProcessor::init()->init()->fileNoError()->fileUploaded()->fileMimeType('image/png')->fileSize(100000)->fileMoveUpload('asd', 'd:\Development\testdata\testfrom\\')->verify($_FILES['test'], Errors::ALL);
+            $return = DataProcessor::init()->init()->fileNoError()->fileUploaded()->fileMimeType('image/png')->fileSize(100000)->fileMoveUpload('asd', 'd:\Development\testdata\testfrom\\')->process($_FILES['test'], Errors::ALL);
         } catch (FailedProcessingException $e) {
             $return = false;
             $expected = Tools::searchAndReplace(RuleSettings::getErrorSetting("fileMimeType"), ["mimeType" => "image/png"]);
@@ -116,14 +116,14 @@ class FileUploadTest extends \PHPUnit_Framework_TestCase
             $this->assertEquals($expected, $got);
         } finally {
 
-            $this->assertEquals(false, $return);
+            $this->assertEquals(false, $return->isSuccess());
         }
     }
 
     public function testUploadFailureAtFileSize()
     {
         try {
-            DataProcessor::init()->fileNoError()->fileUploaded()->fileMimeType('image/jpeg')->fileSize(300000)->fileMoveUpload('asd', 'd:\Development\testdata\testfrom\\')->verify($_FILES['test'], Errors::ALL);
+            $return = DataProcessor::init()->fileNoError()->fileUploaded()->fileMimeType('image/jpeg')->fileSize(300000)->fileMoveUpload('asd', 'd:\Development\testdata\testfrom\\')->process($_FILES['test'], Errors::ALL);
         } catch (FailedProcessingException $e) {
             $return = false;
             $expected = Tools::searchAndReplace(RuleSettings::getErrorSetting("fileSize"), ["minSize" => 300000]);
@@ -131,7 +131,7 @@ class FileUploadTest extends \PHPUnit_Framework_TestCase
             $this->assertEquals($expected, $got);
         } finally {
 
-            $this->assertEquals(false, $return);
+            $this->assertEquals(false, $return->isSuccess());
         }
     }
 }

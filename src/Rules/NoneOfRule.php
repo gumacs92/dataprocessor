@@ -9,8 +9,8 @@
 namespace Processor\Rules;
 
 use Processor\DataProcessor;
-use Processor\Exceptions\FailedProcessingException;
 use Processor\Rules\Abstraction\AbstractRule;
+use Processor\Rules\Abstraction\RuleSettings;
 
 class NoneOfRule extends AbstractRule
 {
@@ -22,6 +22,7 @@ class NoneOfRule extends AbstractRule
         if (is_array($processors)) {
             foreach ($processors as $proc) {
                 $this->typeCheck($proc, DataProcessor::class);
+                $proc->setName($this->name);
             }
             $this->processors = $processors;
         } else {
@@ -37,20 +38,11 @@ class NoneOfRule extends AbstractRule
 
         /* @var DataProcessor $proc */
         foreach ($this->processors as $proc) {
-            try {
-                $oldData = $this->data;
-                $proc->setName($this->name);
-                $return = $proc->verify($this->data, $this->feedback);
+            $result = $proc->process($this->data, $this->feedback);
 
-                if ($return) {
-                    $failed = true;
-                    $this->data = $oldData;
-//                    $errors[] = $proc->getMockedErrors();
-                    $this->addReturnErrors($proc->getMockedErrors());
-                }
-            } catch (FailedProcessingException $e) {
-                $this->addReturnErrors($e->getErrors());
-                $this->data = $oldData;
+            if ($result->isSuccess()) {
+                $failed = true;
+                $this->addResultErrorNewLevel($proc->getMockedErrors(RuleSettings::MODE_NEGATED));
             }
         }
 

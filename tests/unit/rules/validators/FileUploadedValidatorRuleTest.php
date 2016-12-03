@@ -8,7 +8,6 @@
 
 namespace Tests\Unit\Rules\Validators;
 
-use Processor\Exceptions\RuleException;
 use Processor\Rules\Abstraction\Errors;
 use Processor\Rules\Abstraction\RuleSettings;
 use Processor\Rules\FileUploadedRule;
@@ -34,36 +33,38 @@ class FileUploadedRuleTest extends \PHPUnit_Framework_TestCase
         );
     }
 
-    public function testFileUploadedTrue(){
+    public function testFileUploadedTrue()
+    {
         $return = $this->rule->process($_FILES['test']);
 
         $this->assertEquals(true, $return);
     }
 
-    public function testFileUploadedFalse(){
+    public function testFileUploadedFalse()
+    {
         $_FILES['test']['tmp_name'] = "";
         $return = $this->rule->process($_FILES['test']);
 
         $this->assertEquals(false, $return);
     }
 
-    public function testFileUploadedTrueWithErrors(){
+    public function testFileUploadedTrueWithErrors()
+    {
         $return = $this->rule->process($_FILES['test'], Errors::ALL);
 
         $this->assertEquals(true, $return);
     }
 
-    public function testFileUploadedFalseWithErrors(){
+    public function testFileUploadedFalseWithErrors()
+    {
         $_FILES['test']['tmp_name'] = "";
-        try{
-            $return = $this->rule->process($_FILES['test'], Errors::ALL);
-        } catch (RuleException $e){
-            $return = false;
-            $this->assertEquals(RuleSettings::getErrorSetting('fileUploaded'), $e->getErrorMessage());
-        } finally {
 
-            $this->assertEquals(false, $return);
-        }
+        $return = $this->rule->process($_FILES['test'], Errors::ALL);
+
+        $return = false;
+        $this->assertEquals(RuleSettings::getErrorSetting("fileUploaded"), $this->rule->getMockedErrorMessage());
+
+        $this->assertEquals(false, $return);
 
     }
 }

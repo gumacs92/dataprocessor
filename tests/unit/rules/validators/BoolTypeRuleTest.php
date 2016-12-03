@@ -9,14 +9,14 @@
 namespace Tests\Unit\Rules\Validators;
 
 
-use Processor\Exceptions\RuleException;
+use Processor\Rules\Abstraction\AbstractRule;
 use Processor\Rules\Abstraction\Errors;
 use Processor\Rules\Abstraction\RuleSettings;
 use Processor\Rules\BoolTypeRule;
 
 class BoolTypeRuleTest extends \PHPUnit_Framework_TestCase
 {
-    /* @var \Processor\Rules\AbstractRule $rule */
+    /* @var AbstractRule $rule */
     private $rule;
 
     public function setUp()
@@ -40,21 +40,18 @@ class BoolTypeRuleTest extends \PHPUnit_Framework_TestCase
 
     public function testBoolTypeTrueWithError()
     {
-        $return = $this->rule->process(false, false);
+        $return = $this->rule->process(false, Errors::NONE);
 
         $this->assertEquals(true, $return);
     }
 
     public function testBoolTypeFalseWithError()
     {
-        try {
-            $return = $this->rule->process("asd", Errors::ALL);
-        } catch (RuleException $e) {
-            $return = false;
-            $this->assertEquals(1, sizeof($e->getErrorMessage()));
-            $this->assertEquals(RuleSettings::getErrorSetting("boolType"), $e->getErrorMessage());
-        } finally {
-            $this->assertEquals(false, $return);
-        }
+        $return = $this->rule->process("asd", Errors::ALL);
+
+        $return = false;
+        $this->assertEquals(RuleSettings::getErrorSetting("boolType"), $this->rule->getMockedErrorMessage());
+
+        $this->assertEquals(false, $return);
     }
 }

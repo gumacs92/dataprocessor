@@ -3,10 +3,11 @@
 namespace Processor;
 
 
-use Processor\Exceptions\FailedProcessingException;
 use Processor\Factory\RuleFactory;
 use Processor\Rules\Abstraction\AbstractRule;
 use Processor\Rules\Abstraction\Errors;
+use Processor\Rules\Abstraction\ProcessorResult;
+use Processor\Rules\Abstraction\RuleSettings;
 
 
 /**
@@ -51,10 +52,6 @@ use Processor\Rules\Abstraction\Errors;
  */
 class DataProcessor extends AbstractRule
 {
-    private static $returnData;
-
-    private $strict;
-
     private $ruleList = [];
 
     public static function init()
@@ -97,44 +94,27 @@ class DataProcessor extends AbstractRule
         /* @var AbstractRule $ruleClass ; */
         $factory = new RuleFactory();
         $ruleClass = $factory->get($name, $arguments);
+        $ruleClass->setName($this->name);
+
 
         return $ruleClass;
     }
 
 
-    public function verify($data, $feedback = Errors::NONE){
+    public function process($data, $feedback = Errors::NONE, $canBeEmpty = false){
         $this->data = $data;
         $this->feedback = $feedback;
+        $this->canBeEmpty = $canBeEmpty;
 
-        $return = $this->rule();
+        $result = $this->rule();
 
-        $errors = $this->getReturnErrors();
-
-        if($return){
-            self::$returnData = $this->data;
-            return true;
-        } else {
-            switch ($feedback){
-                case Errors::NONE:
-                    return false;
-                    break;
-                case Errors::ONE:
-                    throw new FailedProcessingException([key($errors) => current($errors)]);
-                    break;
-                case Errors::ALL:
-                    throw new FailedProcessingException($errors);
-                    break;
-                default:
-                    return false;
-                    break;
-            }
-        }
-
+        return $result;
     }
 
     public function rule()
     {
         $failed = false;
+        $errors = [];
 
         /* @var AbstractRule $rule */
         foreach ($this->ruleList as $rule) {
@@ -142,23 +122,24 @@ class DataProcessor extends AbstractRule
             $result = $rule->process($this->data, $this->feedback);
 
             if($result){
-                $this->data = $rule->getData();
+                $this->data = $rule->data;
             }else{
                 $failed = true;
-                $error = $rule->getReturnErrors();
-                $this->returnErrors[key($error)] = current($error);
+                $this->addResultErrorSameLevel($rule->getResultErrors());
             }
         }
 
-        return $failed ? false : true;
+        $result = new ProcessorResult($this->data, !$failed, $this->getResultErrors());
+
+        return $result;
     }
 
-    public function getMockedErrors()
+    public function getMockedErrors($mode = RuleSettings::MODE_DEFAULT)
     {
         $errors = [];
         /* @var AbstractRule $rule */
         foreach ($this->ruleList as $rule) {
-            $errors[$rule->ruleName] = $rule->getMockedErrorMessage();
+            $errors[$rule->getRuleName()] = $rule->getMockedErrorMessage($mode);
         }
 
         if($this->feedback === Errors::ONE){
@@ -168,15 +149,4 @@ class DataProcessor extends AbstractRule
         }
         return [];
     }
-
-    /**
-     * @return mixed
-     */
-    public static function getReturnData()
-    {
-        return self::$returnData;
-    }
-
-
-
 }

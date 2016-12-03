@@ -43,14 +43,14 @@ abstract class RequestProcessor
         foreach ($request as $field => $value) {
             try {
                 if (isset($this->rules[$field])) {
-                    $this->rules[$field]->verify($value, $allerrors);
+                    $this->rules[$field]->process($value, $allerrors);
 
-                    $this->validatedData[$field] = DataProcessor::getData();
+                    $this->validatedData[$field] = DataProcessor::getReturnData();
                 }
             } catch (FailedProcessingException $e) {
                 $failed = true;
                 if($allerrors){
-                    $this->resultErrors[$field] = $e->getAllErrors();
+                    $this->resultErrors[$field] = $e->getErrors();
                 }
             }
         }

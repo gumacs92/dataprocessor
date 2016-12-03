@@ -18,35 +18,35 @@ class IntTypeRuleTest extends \PHPUnit_Framework_TestCase
 {
     public function testIntTypeTrue()
     {
-        $return = DataProcessor::init()->intType()->verify(10);
+        $return = DataProcessor::init()->intType()->process(10);
 
-        $this->assertEquals(true, $return);
+        $this->assertEquals(true, $return->isSuccess());
     }
 
     public function testIntTypeFalse()
     {
-        $return = DataProcessor::init()->intType()->verify("123");
+        $return = DataProcessor::init()->intType()->process("123");
 
-        $this->assertEquals(false, $return);
+        $this->assertEquals(false, $return->isSuccess());
     }
 
     public function testIntTypeTrueWithError()
     {
-        $return = DataProcessor::init()->intType()->verify(10, Errors::ALL);
+        $return = DataProcessor::init()->intType()->process(10, Errors::ALL);
 
-        $this->assertEquals(true, $return);
+        $this->assertEquals(true, $return->isSuccess());
     }
 
     public function testIntTypeFalseWithError()
     {
         try {
-            DataProcessor::init()->intType()->verify(10.1, Errors::ALL);
+            $return = DataProcessor::init()->intType()->process(10.1, Errors::ALL);
         } catch (FailedProcessingException $e) {
             $return = false;
             $this->assertEquals(1, sizeof($e->getErrors()));
             $this->assertEquals(RuleSettings::getErrorSetting("intType"), $e->getErrors()["intType"]);
         } finally {
-            $this->assertEquals(false, $return);
+            $this->assertEquals(false, $return->isSuccess());
         }
     }
 }

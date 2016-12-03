@@ -18,35 +18,35 @@ class StringTypeRuleTest extends \PHPUnit_Framework_TestCase
 {
     public function testStringTypeTrue()
     {
-        $return = DataProcessor::init()->stringType()->verify("123");
+        $return = DataProcessor::init()->stringType()->process("123");
 
-        $this->assertEquals(true, $return);
+        $this->assertEquals(true, $return->isSuccess());
     }
 
     public function testStringTypeFalse()
     {
-        $return = DataProcessor::init()->stringType()->verify(10);
+        $return = DataProcessor::init()->stringType()->process(10);
 
-        $this->assertEquals(false, $return);
+        $this->assertEquals(false, $return->isSuccess());
     }
 
     public function testStringTypeTrueWithError()
     {
-        $return = DataProcessor::init()->stringType()->verify("123", Errors::ALL);
+        $return = DataProcessor::init()->stringType()->process("123", Errors::ALL);
 
-        $this->assertEquals(true, $return);
+        $this->assertEquals(true, $return->isSuccess());
     }
 
     public function testStringTypeFalseWithError()
     {
         try {
-            DataProcessor::init()->stringType()->verify(10, Errors::ALL);
+            $return = DataProcessor::init()->stringType()->process(10, Errors::ALL);
         } catch (FailedProcessingException $e) {
             $return = false;
             $this->assertEquals(1, sizeof($e->getErrors()));
             $this->assertEquals(RuleSettings::getErrorSetting("stringType"), $e->getErrors()["stringType"]);
         } finally {
-            $this->assertEquals(false, $return);
+            $this->assertEquals(false, $return->isSuccess());
         }
     }
 

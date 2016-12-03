@@ -9,53 +9,50 @@
 namespace Tests\Unit\Rules\Validators;
 
 
-use Processor\DataProcessor;
-use Processor\Exceptions\FailedProcessingException;
+use Processor\Rules\Abstraction\AbstractRule;
 use Processor\Rules\Abstraction\Errors;
 use Processor\Rules\Abstraction\RuleSettings;
+use Processor\Rules\LengthRule;
 use Tests\Helpers\Tools;
 
 class LengthRuleTest extends \PHPUnit_Framework_TestCase
 {
-    public function testLengthTypeError()
+    /* @var AbstractRule $rule */
+    private $rule;
+
+    public function setUp()
     {
-        $this->expectException('\Processor\Exceptions\InvalidArgumentException');
-        DataProcessor::init()->length(2, 'asd')->setName('Length')->verify(1, Errors::ALL);
+        $this->rule = new LengthRule(2, 4, false);
     }
 
-    public function testLengthInRangeNotInclusive()
+    public function testLengthTrueNotInclusive()
     {
-        $return = DataProcessor::init()->length(2, 4, false)->setName('Range')->verify([1,2]);
+        $this->rule = new LengthRule(2, 4, false);
+        $return = $this->rule->process([1, 2]);
 
         $this->assertEquals(false, $return);
     }
 
-    public function testLengthInRangeInclusive()
+    public function testLengthTrueInclusive()
     {
-        $return = DataProcessor::init()->length(2, 4)->setName('Range')->verify([1,2,3]);
+        $return = $this->rule->process([1, 2, 3]);
 
         $this->assertEquals(true, $return);
     }
 
-    public function testLengthOutOfRange()
+    public function testLengthFalseOutOfRangeArray()
     {
-        try {
-            DataProcessor::init()->length(2, 4)->setName('Range')->verify([], Errors::ALL);
-        } catch (FailedProcessingException $e) {
+        $this->rule->process([10], Errors::ALL);
 
-            $this->assertEquals(1, sizeof($e->getErrors()));
-            $this->assertEquals(Tools::searchAndReplace(RuleSettings::getErrorSetting('length'), ["name" => "Range", "min" => 2, "max" => 4]), $e->getErrors()['length']);
-        }
+        $this->assertEquals(1, sizeof($this->rule->getResultErrors()));
+        $this->assertEquals(Tools::searchAndReplace(RuleSettings::getErrorSetting('length'), ["min" => 2, "max" => 4]), $this->rule->getResultErrors()['length']);
     }
 
-    public function testLengthTypeFalse()
+    public function testLengthFalseOutOfRangeString()
     {
-        try {
-            DataProcessor::init()->stringType()->length(0, 4)->setName('Length')->verify(5, Errors::ALL);
-        } catch (FailedProcessingException $e) {
+        $this->rule->process("5", Errors::ALL);
 
-            $this->assertEquals(2, sizeof($e->getErrors()));
-            $this->assertEquals(Tools::searchAndReplace(RuleSettings::getErrorSetting('stringType'), ["name" => "Length", "min" => 0, "max" => 4]), $e->getErrors()['stringType']);
-        }
+        $this->assertEquals(1, sizeof($this->rule->getResultErrors()));
+        $this->assertEquals(Tools::searchAndReplace(RuleSettings::getErrorSetting('length'), ["min" => 2, "max" => 4]), $this->rule->getResultErrors()['length']);
     }
 }

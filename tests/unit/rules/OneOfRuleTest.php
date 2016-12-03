@@ -10,36 +10,45 @@ namespace Tests\Unit\Rules;
 
 
 use Processor\DataProcessor;
-use Processor\Exceptions\FailedProcessingException;
+use Processor\Rules\Abstraction\AbstractRule;
 use Processor\Rules\Abstraction\Errors;
 use Processor\Rules\Abstraction\RuleSettings;
+use Processor\Rules\OneOfRule;
 use Tests\Helpers\Tools;
 
 class OneOfRuleTest extends \PHPUnit_Framework_TestCase
 {
-    public function testOneOfSuccessfulValidator(){
-        $return = DataProcessor::init()->oneOf(DataProcessor::init()->length(2, 4), DataProcessor::init()->setTypeInt()->intType())->setName('oneof')->verify("123", Errors::ALL);
-        $value = DataProcessor::getReturnData();
+    /* @var AbstractRule $rule */
+    private $rule;
 
-        $this->assertEquals("123", $value);
+    public function setUp()
+    {
+        $this->rule = new OneOfRule(DataProcessor::init()->length(2, 4), DataProcessor::init()->floatType());
     }
 
-    public function testOneOfSuccessfulFilter(){
-        $return = DataProcessor::init()->oneOf(DataProcessor::init()->length(2, 4), DataProcessor::init()->setTypeInt()->intType())->setName('oneof')->verify("123asd", Errors::ALL);
-        $value = DataProcessor::getReturnData();
+    public function testOneOfTrueFirst()
+    {
+        $return = $this->rule->process("123", Errors::ALL);
 
-        $this->assertEquals(123, $value);
+        $this->assertEquals("123", $this->rule->getData());
     }
 
-    public function testOneOfError(){
-        try {
-            DataProcessor::init()->oneOf(DataProcessor::init()->length(2, 4), DataProcessor::init()->floatType())->setName('oneof')->verify("1", Errors::ALL);
-        } catch (FailedProcessingException $e) {
+    public function testOneOfTrueSecond()
+    {
+        $return = $this->rule->process("1231.1", Errors::ALL);
 
-            $this->assertEquals(3, sizeof($e->getErrors()['oneOf']));
-            $this->assertEquals(RuleSettings::getErrorSetting('oneOf'), $e->getErrors()['oneOf']['oneOf']);
-            $this->assertEquals(Tools::searchAndReplace(RuleSettings::getErrorSetting('length'), ["name" => "oneof", "min" => 2, "max" => 4]), $e->getErrors()['oneOf']['oneOf0']['length']);
-            $this->assertEquals(Tools::searchAndReplace(RuleSettings::getErrorSetting('floatType'), ["name" => "oneof"]), $e->getErrors()['oneOf']['oneOf1']['floatType']);
-        }
+        $this->assertEquals(1231.1, $this->rule->getData());
+    }
+
+    public function testOneOfAllError()
+    {
+        $return = $this->rule->process("adhfghfgf", Errors::ALL);
+
+        $this->assertEquals(false, $return);
+        $this->assertEquals(3, sizeof($this->rule->getResultErrors()['oneOf']));
+        $this->assertEquals(RuleSettings::getErrorSetting('oneOf'), $this->rule->getResultErrors()['oneOf']['oneOf']);
+        $this->assertEquals(Tools::searchAndReplace(RuleSettings::getErrorSetting('length'), ["min" => 2, "max" => 4]), $this->rule->getResultErrors()['oneOf']['oneOf0']['length']);
+        $this->assertEquals(Tools::searchAndReplace(RuleSettings::getErrorSetting('floatType'), []), $this->rule->getResultErrors()['oneOf']['oneOf1']['floatType']);
+
     }
 }

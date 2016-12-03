@@ -10,40 +10,48 @@ namespace Tests\Unit\Rules;
 
 
 use Processor\DataProcessor;
-use Processor\Exceptions\FailedProcessingException;
+use Processor\Rules\Abstraction\AbstractRule;
 use Processor\Rules\Abstraction\Errors;
 use Processor\Rules\Abstraction\RuleSettings;
+use Processor\Rules\AllOfRule;
 use Tests\Helpers\Tools;
 
 class AllOfRuleTest extends \PHPUnit_Framework_TestCase
 {
-    public function testAllOfSuccessfulAll(){
-        $return = DataProcessor::init()->allOf(DataProcessor::init()->length(2, 4), DataProcessor::init()->setTypeInt()->intType())->setName('allof')->verify("123", Errors::ALL);
-        $value = DataProcessor::getReturnData();
+    /* @var AbstractRule $rule */
+    private $rule;
 
-        $this->assertEquals(123, $value);
+    public function setUp()
+    {
+        $this->rule = new AllOfRule(DataProcessor::init()->length(2, 4), DataProcessor::init()->intVal()->intType());
     }
 
-    public function testAllOfOneError(){
-        try {
-            DataProcessor::init()->allOf(DataProcessor::init()->length(2, 4), DataProcessor::init()->floatType())->setName('allof')->verify("111", Errors::ALL);
-        } catch (FailedProcessingException $e) {
+    public function testAllOfSuccessfulAll()
+    {
+        $return = $this->rule->process("123", Errors::ALL);
 
-            $this->assertEquals(2, sizeof($e->getErrors()['allOf']));
-            $this->assertEquals(RuleSettings::getErrorSetting('allOf'), $e->getErrors()['allOf']['allOf']);
-            $this->assertEquals(Tools::searchAndReplace(RuleSettings::getErrorSetting('floatType'), ["name" => "allof"]), $e->getErrors()['allOf']['allOf0']['floatType']);
-        }
+        $this->assertEquals(123, $this->rule->getData());
     }
 
-    public function testAllOfAllError(){
-        try {
-            DataProcessor::init()->allOf(DataProcessor::init()->length(2, 4), DataProcessor::init()->floatType())->setName('allof')->verify("1", Errors::ALL);
-        } catch (FailedProcessingException $e) {
+    public function testAllOfOneError()
+    {
+        $this->rule->process("111.111", Errors::ONE);
 
-            $this->assertEquals(3, sizeof($e->getErrors()['allOf']));
-            $this->assertEquals(RuleSettings::getErrorSetting('allOf'), $e->getErrors()['allOf']['allOf']);
-            $this->assertEquals(Tools::searchAndReplace(RuleSettings::getErrorSetting('length'), ["name" => "allof", "min" => 2, "max" => 4]), $e->getErrors()['allOf']['allOf0']['length']);
-            $this->assertEquals(Tools::searchAndReplace(RuleSettings::getErrorSetting('floatType'), ["name" => "allof"]), $e->getErrors()['allOf']['allOf1']['floatType']);
-        }
+        $this->assertEquals(3, sizeof($this->rule->getResultErrors()['allOf']));
+        $this->assertEquals(RuleSettings::getErrorSetting('allOf'), $this->rule->getResultErrors()['allOf']['allOf']);
+        $this->assertEquals(Tools::searchAndReplace(RuleSettings::getErrorSetting('length'), ["min" => 2, "max" => 4]), $this->rule->getResultErrors()['allOf']['length']);
+        $this->assertEquals(Tools::searchAndReplace(RuleSettings::getErrorSetting('intVal'), []), $this->rule->getResultErrors()['allOf']['intVal']);
+
+    }
+
+    public function testAllOfAllError()
+    {
+        $this->rule->process("111.111", Errors::ALL);
+
+        $this->assertEquals(3, sizeof($this->rule->getResultErrors()['allOf']));
+        $this->assertEquals(RuleSettings::getErrorSetting('allOf', RuleSettings::MODE_DEFAULT), $this->rule->getResultErrors()['allOf']['allOf']);
+        $this->assertEquals(Tools::searchAndReplace(RuleSettings::getErrorSetting('length'), ["min" => 2, "max" => 4]), $this->rule->getResultErrors()['allOf']['allOf0']['length']);
+        $this->assertEquals(Tools::searchAndReplace(RuleSettings::getErrorSetting('intVal'), []), $this->rule->getResultErrors()['allOf']['allOf1']['intVal']);
+        $this->assertEquals(Tools::searchAndReplace(RuleSettings::getErrorSetting('intType'), []), $this->rule->getResultErrors()['allOf']['allOf1']['intType']);
     }
 }

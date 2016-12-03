@@ -20,34 +20,34 @@ class BetweenRuleTest extends \PHPUnit_Framework_TestCase
     public function testBetweenTypeError()
     {
         $this->expectException('\Processor\Exceptions\InvalidArgumentException');
-        DataProcessor::init()->between(2, 'asd')->verify("asd", Errors::ALL);
+        DataProcessor::init()->between(2, 'asd')->process("asd", Errors::ALL);
     }
 
     public function testBetweenInRangeNotInclusive()
     {
-        $return = DataProcessor::init()->between(2, 5, false)->verify(2);
+        $return = DataProcessor::init()->between(2, 5, false)->process(2);
 
-        $this->assertEquals(false, $return);
+        $this->assertEquals(false, $return->isSuccess());
     }
 
     public function testBetweenInRangeInclusive()
     {
-        $return = DataProcessor::init()->between(2, 4)->verify(2);
+        $return = DataProcessor::init()->between(2, 4)->process(2);
 
-        $this->assertEquals(true, $return);
+        $this->assertEquals(true, $return->isSuccess());
     }
 
     public function testBetweenOutOfRange()
     {
         try {
-            DataProcessor::init()->between(2, 4)->verify(5, Errors::ALL);
+            $return = DataProcessor::init()->between(2, 4)->process(5, Errors::ALL);
         } catch (FailedProcessingException $e) {
             $return = false;
 
             $this->assertEquals(1, sizeof($e->getErrors()));
-            $this->assertEquals(Tools::searchAndReplace(RuleSettings::getErrorSetting('between'), ["min" => 2, "max" => 4]), $e->getErrors()['between']);
+            $this->assertEquals(Tools::searchAndReplace(RuleSettings::getErrorSetting('between', RuleSettings::MODE_DEFAULT), ["min" => 2, "max" => 4]), $e->getErrors()['between']);
         } finally {
-            $this->assertEquals(false, $return);
+            $this->assertEquals(false, $return->isSuccess());
         }
     }
 }

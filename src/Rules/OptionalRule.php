@@ -3,7 +3,6 @@
 namespace Processor\Rules;
 
 use Processor\DataProcessor;
-use Processor\Exceptions\FailedProcessingException;
 use Processor\Rules\Abstraction\AbstractRule;
 
 /**
@@ -21,6 +20,8 @@ class OptionalRule extends AbstractRule
     {
         parent::__construct();
         $this->processor = $this->typeCheck($processor, DataProcessor::class);
+        $this->processor->setName($this->name);
+        $this->canBeEmpty =  true;
     }
 
     public function rule()
@@ -28,23 +29,15 @@ class OptionalRule extends AbstractRule
         if (!isset($this->data) || empty($this->data)) {
             return true;
         } else {
-            try {
-                $this->processor->setName($this->name);
-                $return = $this->processor->verify($this->data, $this->feedback);
+            $result = $this->processor->process($this->data, $this->feedback, true);
 
-                if ($return) {
-                    $this->data = $this->processor->getData();
-                } else {
-                    $this->addReturnErrors($this->processor->getMockedErrors());
-                }
+            if (!$result->isSuccess()) {
+                $this->addResultErrorNewLevel($result->getErrors());
+            } else {
+                $this->data = $result->getData();
+            }
 
-            } catch (FailedProcessingException $e) {
-                $this->addReturnErrors($e->getErrors());
-            }
-            if ($return) {
-                return true;
-            }
-            return false;
+            return $result->isSuccess();
         }
     }
 }

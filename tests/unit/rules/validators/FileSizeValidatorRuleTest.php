@@ -9,7 +9,6 @@
 namespace Tests\Unit\Rules\Validators;
 
 
-use Processor\Exceptions\RuleException;
 use Processor\Rules\Abstraction\Errors;
 use Processor\Rules\Abstraction\RuleSettings;
 use Processor\Rules\FileSizeRule;
@@ -35,36 +34,37 @@ class FileSizeRuleTest extends \PHPUnit_Framework_TestCase
         );
     }
 
-    public function testFileSizeTrue(){
+    public function testFileSizeTrue()
+    {
         $return = $this->rule->process($_FILES['test']);
 
         $this->assertEquals(true, $return);
     }
 
-    public function testFileSizeFalse(){
-        $_FILES['test']['tmp_name'] =  'd:\Development\testdata\testfrom\test.php';
+    public function testFileSizeFalse()
+    {
+        $_FILES['test']['tmp_name'] = 'd:\Development\testdata\testfrom\test.php';
         $return = $this->rule->process($_FILES['test']);
 
         $this->assertEquals(false, $return);
     }
 
-    public function testFileSizeTrueWithErrors(){
+    public function testFileSizeTrueWithErrors()
+    {
         $return = $this->rule->process($_FILES['test'], Errors::ALL);
 
         $this->assertEquals(true, $return);
     }
 
-    public function testFileSizeFalseWithErrors(){
-        $_FILES['test']['tmp_name'] =  'd:\Development\testdata\testfrom\test.php';
-        try{
-            $return = $this->rule->process($_FILES['test'], Errors::ALL);
-        } catch (RuleException $e){
-            $return = false;
-            $this->assertEquals(Tools::searchAndReplace(RuleSettings::getErrorSetting('fileSize'), ["minSize" => 100000, "maxSize" => 200000]), $e->getErrorMessage());
-        } finally {
+    public function testFileSizeFalseWithErrors()
+    {
+        $_FILES['test']['tmp_name'] = 'd:\Development\testdata\testfrom\test.php';
 
-            $this->assertEquals(false, $return);
-        }
+        $return = $this->rule->process($_FILES['test'], Errors::ALL);
 
+        $this->rule->getMockedErrorMessage();
+        $this->assertEquals(Tools::searchAndReplace(RuleSettings::getErrorSetting('fileSize', RuleSettings::MODE_DEFAULT), ["minSize" => 100000, "maxSize" => 200000]), $this->rule->getMockedErrorMessage());
+
+        $this->assertEquals(false, $return);
     }
 }
