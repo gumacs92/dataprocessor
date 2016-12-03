@@ -8,7 +8,8 @@
 
 namespace Processor;
 
-use Processor\Exceptions\FailedProcessingException;
+use Processor\Rules\Abstraction\Errors;
+use Processor\Rules\Abstraction\ProcessorResult;
 use Processor\Rules\Abstraction\RuleSettings;
 
 abstract class RequestProcessor
@@ -31,38 +32,37 @@ abstract class RequestProcessor
 
     abstract public function initRules();
 
-    final public function setErrorSettings(){
+    final public function setErrorSettings()
+    {
         foreach ($this->errorMessages as $ruleName => $errorMessage) {
             RuleSettings::setErrorSetting($ruleName, $errorMessage);
         }
     }
 
-    final public function checkRequest($request, $allerrors = true)
+    final public function checkRequest($request, $allerrors = Errors::ONE)
     {
-        $failed = false;
         foreach ($request as $field => $value) {
-            try {
-                if (isset($this->rules[$field])) {
-                    $this->rules[$field]->process($value, $allerrors);
+            if (isset($this->rules[$field])) {
+                /* @var ProcessorResult $result */
+                $result = $this->rules[$field]->process($value, $allerrors);
 
-                    $this->validatedData[$field] = DataProcessor::getReturnData();
-                }
-            } catch (FailedProcessingException $e) {
-                $failed = true;
-                if($allerrors){
-                    $this->resultErrors[$field] = $e->getErrors();
+                if ($result->isSuccess()) {
+                    $this->validatedData[$field] = $result->getData();
+                } else {
+                    $this->resultErrors[$field] = $result->getErrors();
                 }
             }
         }
 
-        return $failed ? false : true;
+        return !empty($this->resultErrors) ? false : true;
     }
 
 
     /**
      * @return mixed
      */
-    public function getValidatedData()
+    public
+    function getValidatedData()
     {
         return $this->validatedData;
     }
@@ -70,7 +70,8 @@ abstract class RequestProcessor
     /**
      * @return array
      */
-    public function getResultErrors()
+    public
+    function getResultErrors()
     {
         return $this->resultErrors;
     }
