@@ -40,8 +40,11 @@ class DateTimeFormatRule extends AbstractRule
             }
         }else{
             setlocale(LC_TIME, $this->locale);
-            $this->data = utf8_encode(strftime($this->format, $this->data->getTimestamp()));
-            return true;
+            if(($this->data = utf8_encode(strftime($this->format, $this->data->getTimestamp()))) !== false){
+                return true;
+            } else {
+                return false;
+            }
         }
     }
 

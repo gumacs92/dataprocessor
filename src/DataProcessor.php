@@ -16,11 +16,11 @@ use Processor\Rules\Abstraction\RuleSettings;
  * @method DataProcessor allOf(...$processors)
  * @method DataProcessor alnum($extraCharacters = "")
  * @method DataProcessor arrayVal()
- * @method DataProcessor between($min, $max, $inclusive = true);
+ * @method DataProcessor between($min, $max, $inclusive = true)
  * @method DataProcessor boolType()
  * @method DataProcessor boolVal()
  * @method DataProcessor date($format = "", $convert = false)
- * @method DataProcessor dateFormat($format)
+ * @method DataProcessor dateTimeFormat($format, $locale = '')
  * @method DataProcessor digit($extraCharacters = "")
  * @method DataProcessor each($valueProcessor, $keyProcessor = null)
  * @method DataProcessor escapeHtmlTags()
