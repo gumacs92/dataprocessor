@@ -9,14 +9,13 @@
 namespace Processor\Rules;
 
 
-use Processor\Rules\Abstraction\AbstractRule;
+use Processor\Rules\Abstraction\AbstractEmptyRule;
 
-class EmptyRule extends AbstractRule
+class EmptyRule extends AbstractEmptyRule
 {
     public function __construct()
     {
         parent::__construct();
-        $this->canBeEmpty =  true;
     }
 
     public function rule()

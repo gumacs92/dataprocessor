@@ -3,7 +3,7 @@
 namespace Processor\Rules;
 
 use Processor\DataProcessor;
-use Processor\Rules\Abstraction\AbstractRule;
+use Processor\Rules\Abstraction\AbstractEmptyRule;
 
 /**
  * Created by PhpStorm.
@@ -11,7 +11,7 @@ use Processor\Rules\Abstraction\AbstractRule;
  * Date: 2016-11-04
  * Time: 03:35 PM
  */
-class OptionalRule extends AbstractRule
+class OptionalRule extends AbstractEmptyRule
 {
     /* @var DataProcessor $processor */
     protected $processor;
@@ -21,7 +21,6 @@ class OptionalRule extends AbstractRule
         parent::__construct();
         $this->processor = $this->typeCheck($processor, DataProcessor::class);
         $this->processor->setName($this->name);
-        $this->canBeEmpty =  true;
     }
 
     public function rule()
