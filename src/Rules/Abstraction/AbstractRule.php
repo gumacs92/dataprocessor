@@ -54,7 +54,7 @@ abstract class AbstractRule implements IValidatable
 
     protected final function addEmptyError()
     {
-        $this->resultErrors['empty'] = RuleSettings::getErrorSetting('empty');
+        $this->resultErrors['empty'] = $this->replaceTags(RuleSettings::getErrorSetting('empty'));
     }
 
     protected final function addResultErrorSameLevel($errors = '', $mode = RuleSettings::MODE_DEFAULT)

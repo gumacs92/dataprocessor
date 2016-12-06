@@ -50,6 +50,5 @@ class DateTimeFormatRuleTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals(true, $return);
         $this->assertEquals("2016 március 28", $data);
-
     }
 }

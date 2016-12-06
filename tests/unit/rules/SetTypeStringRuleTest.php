@@ -6,13 +6,11 @@
  * Time: 01:23 AM
  */
 
-namespace Tests\Unit\Rules\Validators;
+namespace Tests\Unit\Rules;
 
 
-use Processor\Exceptions\FailedProcessingException;
 use Processor\Rules\Abstraction\AbstractRule;
 use Processor\Rules\Abstraction\Errors;
-use Processor\Rules\Abstraction\RuleSettings;
 use Processor\Rules\SetTypeStringRule;
 
 class SetTypeStringRuleTest extends \PHPUnit_Framework_TestCase
@@ -48,14 +46,8 @@ class SetTypeStringRuleTest extends \PHPUnit_Framework_TestCase
 
     public function testSetTypeStringTrueFromBoolWithError()
     {
-        try {
-            $return = $this->rule->process(false, Errors::ALL);
-        } catch (FailedProcessingException $e) {
-            $return = false;
-            $this->assertEquals(1, sizeof($e->getErrors()));
-            $this->assertEquals(RuleSettings::getErrorSetting("setTypeString"), $e->getErrors()['setTypeString']);
-        } finally {
-            $this->assertEquals(true, $return);
-        }
+        $return = $this->rule->process(false, Errors::ALL);
+
+        $this->assertEquals(true, $return);
     }
 }

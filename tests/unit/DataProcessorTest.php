@@ -9,7 +9,6 @@
 namespace Processor;
 
 
-
 use Processor\Exceptions\FailedProcessingException;
 use Processor\Rules\Abstraction\Errors;
 use Processor\Rules\Abstraction\RuleSettings;
@@ -33,7 +32,8 @@ class DataProcessorTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(RuleSettings::getErrorSetting('empty'), $return->getErrors()['empty']);
     }
 
-    public function testComplexRule1(){
+    public function testComplexRule1()
+    {
         $return = DataProcessor::init()->each(DataProcessor::init()->intType()->in([10, 11, 12]))->process([10, 11, 10]);
 
         $this->assertEquals(true, $return->isSuccess());
@@ -41,18 +41,15 @@ class DataProcessorTest extends \PHPUnit_Framework_TestCase
 
     public function testSetName()
     {
-        try {
-            $return = DataProcessor::init()->setTypeInt()->floatType()->setName('alma')->process("123asd", Errors::ONE);
-        } catch (FailedProcessingException $e) {
+        $return = DataProcessor::init()->setTypeInt()->floatType()->setName('alma')->process("123asd", Errors::ONE);
 
-            $this->assertEquals(1, sizeof($e->getErrors()));
-            $search = "/({{)(name)(}})/";
-            $replace = "alma";
-            $msg = RuleSettings::getErrorSetting('floatType', RuleSettings::MODE_DEFAULT);
-            $msg = preg_replace($search, $replace, $msg);
-            $this->assertEquals($msg, $e->getErrors()['floatType']);
+        $this->assertEquals(1, sizeof($return->getErrors()));
+        $search = "/({{)(name)(}})/";
+        $replace = "alma";
+        $msg = RuleSettings::getErrorSetting('floatType', RuleSettings::MODE_DEFAULT);
+        $msg = preg_replace($search, $replace, $msg);
+        $this->assertEquals($msg, $return->getErrors()['floatType']);
 
-        }
     }
 
     public function testIntCastAndIntVal()
