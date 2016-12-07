@@ -22,9 +22,7 @@ class EachRule extends AbstractRule
     {
         parent::__construct();
         $this->valueProcessor = $this->typeCheck($valueProcessor, DataProcessor::class);
-        $this->valueProcessor === null ?: $this->valueProcessor->setName($this->name);
         $this->keyProcessor = $this->typeCheck($keyProcessor, DataProcessor::class);
-        $this->keyProcessor === null ?: $this->keyProcessor->setName($this->name);
 
     }
 
@@ -37,6 +35,7 @@ class EachRule extends AbstractRule
 
         foreach ($this->data as $key => $value) {
             if (isset($this->valueProcessor)) {
+                $this->valueProcessor->setName($this->name);
                 $result = $this->valueProcessor->process($value, $this->feedback);
 
                 if (!($valuesuccess = $result->isSuccess())) {
@@ -46,6 +45,7 @@ class EachRule extends AbstractRule
                 }
             }
             if (isset($this->keyProcessor)) {
+                $this->keyProcessor->setName($this->name);
                 $result = $this->keyProcessor->process($key, $this->feedback);
 
                 if (!($keysuccess = $result->isSuccess())) {

@@ -20,7 +20,6 @@ class OptionalRule extends AbstractEmptyRule
     {
         parent::__construct();
         $this->processor = $this->typeCheck($processor, DataProcessor::class);
-        $this->processor->setName($this->name);
     }
 
     public function rule()
@@ -28,6 +27,7 @@ class OptionalRule extends AbstractEmptyRule
         if (!isset($this->data) || empty($this->data)) {
             return true;
         } else {
+            $this->processor->setName($this->name);
             $result = $this->processor->process($this->data, $this->feedback, true);
 
             if (!$result->isSuccess()) {

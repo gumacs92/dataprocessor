@@ -27,6 +27,7 @@ class NotRule extends AbstractRule
 
     public function rule(){
 
+        $this->processor->setName($this->name);
         $return = $this->processor->process($this->data, $this->feedback);
 
         if($return->isSuccess()){

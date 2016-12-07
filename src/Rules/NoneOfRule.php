@@ -22,7 +22,6 @@ class NoneOfRule extends AbstractRule
         if (is_array($processors)) {
             foreach ($processors as $proc) {
                 $this->typeCheck($proc, DataProcessor::class);
-                $proc->setName($this->name);
             }
             $this->processors = $processors;
         } else {
@@ -38,6 +37,7 @@ class NoneOfRule extends AbstractRule
 
         /* @var DataProcessor $proc */
         foreach ($this->processors as $proc) {
+            $proc->setName($this->name);
             $result = $proc->process($this->data, $this->feedback);
 
             if ($result->isSuccess()) {

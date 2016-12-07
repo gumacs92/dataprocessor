@@ -12,6 +12,7 @@ namespace Processor;
 use Processor\Exceptions\FailedProcessingException;
 use Processor\Rules\Abstraction\Errors;
 use Processor\Rules\Abstraction\RuleSettings;
+use Tests\Helpers\Tools;
 
 
 class DataProcessorTest extends \PHPUnit_Framework_TestCase
@@ -37,6 +38,15 @@ class DataProcessorTest extends \PHPUnit_Framework_TestCase
         $return = DataProcessor::init()->each(DataProcessor::init()->intType()->in([10, 11, 12]))->process([10, 11, 10]);
 
         $this->assertEquals(true, $return->isSuccess());
+    }
+
+    public function testSetNameEach()
+    {
+        $return = DataProcessor::init()->each(DataProcessor::init()->setTypeInt()->floatType())->setName('alma')->process(['asd'], Errors::ONE);
+
+        $this->assertEquals(2, sizeof($return->getErrors()['each']));
+        $this->assertEquals(Tools::searchAndReplace(RuleSettings::getErrorSetting('empty'), [ 'name' => 'alma']), $return->getErrors()['each']['empty']);
+
     }
 
     public function testSetName()
