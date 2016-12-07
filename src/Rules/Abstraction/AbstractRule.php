@@ -214,7 +214,7 @@ abstract class AbstractRule implements IValidatable
     final private function setData($data)
     {
         if (!$this->canBeEmpty) {
-            if ((empty($data) || !isset($data)) && !is_bool($data) && $data == 0) {
+            if ($data !== false && $data !== 0 && (empty($data) || !isset($data))) {
                 return false;
             }
         }
