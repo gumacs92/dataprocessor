@@ -42,10 +42,10 @@ class DataProcessorTest extends \PHPUnit_Framework_TestCase
 
     public function testSetNameEach()
     {
-        $return = DataProcessor::init()->each(DataProcessor::init()->setTypeInt()->floatType())->setName('alma')->process([], Errors::ONE);
+        $return = DataProcessor::init()->each(DataProcessor::init()->setTypeInt()->boolVal())->setName('alma')->process([0, 200], Errors::ONE);
 
         $this->assertEquals(1, sizeof($return->getErrors()));
-        $this->assertEquals(Tools::searchAndReplace(RuleSettings::getErrorSetting('empty'), [ 'name' => 'alma']), $return->getErrors()['empty']);
+        $this->assertEquals(Tools::searchAndReplace(RuleSettings::getErrorSetting('boolVal'), [ 'name' => 'alma']), $return->getErrors()['each']['boolVal']);
 
     }
 
