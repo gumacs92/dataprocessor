@@ -11,6 +11,7 @@ namespace Processor\Rules;
 
 use DateTime;
 use DateTimeInterface;
+use DateTimeZone;
 use Processor\Rules\Abstraction\AbstractRule;
 
 class DateRule extends AbstractRule
@@ -18,7 +19,7 @@ class DateRule extends AbstractRule
     protected $format;
     protected $convert;
 
-    public function __construct($format = '', $convert= false)
+    public function __construct($format = '', $convert = false)
     {
         parent::__construct();
 
@@ -34,7 +35,7 @@ class DateRule extends AbstractRule
                 if ($result !== false && $this->convert === true) {
                     $this->data = $result;
                     $this->data = date("Y-m-d H:i:s", $this->data);
-                    $this->data = new DateTime($this->data);
+                    $this->data = new DateTime($this->data, new DateTimeZone('UTC'));
                     return true;
                 } elseif ($result !== false && $this->convert === false) {
                     return true;

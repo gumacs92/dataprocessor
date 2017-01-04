@@ -57,4 +57,12 @@ class DateRuleTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(Tools::searchAndReplace(RuleSettings::getErrorSetting("date"), ["format" => "m/d/Y h:i a"]), $this->rule->getResultErrors()['date']);
         $this->assertEquals(false, $return);
     }
+
+    public function testDateNowTrue()
+    {
+        $this->rule = new DateRule("", true);
+        $return = $this->rule->process("now");
+
+        $this->assertEquals(true, $return);
+    }
 }
